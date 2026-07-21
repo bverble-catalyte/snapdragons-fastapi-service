@@ -8,3 +8,9 @@ def test_read_root():
     
     assert response.status_code == 200
     assert response.json() == {"message": "Hello World"}
+
+def test_hello_name():
+    name = "Jimmie"
+    response = client.get("/hello/Jimmie")
+    assert response.status_code == 200
+    assert response.json() == {"message": "Hello, Jimmie!"}
