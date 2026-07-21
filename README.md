@@ -32,5 +32,5 @@ pip install -r requirements.txt
 Run with:
 
 ```
-fastapi dev
+fastapi dev src/main.py
 ```
