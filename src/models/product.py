@@ -19,4 +19,4 @@ class Product(BaseModel):
     unit: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)]
     cost_per_unit: Annotated[Decimal, Field(gt=0, decimal_places=2)]
     price_per_unit: Annotated[Decimal, Field(gt=0, decimal_places=2)]
-    quantity_in_stock: Annotated[Decimal, Field(gt=0)]
+    quantity_in_stock: Annotated[Decimal, Field(ge=0)]
