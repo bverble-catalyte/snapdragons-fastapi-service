@@ -1,5 +1,7 @@
 # Team Snapdragons - FastAPI Service
 
+[![Tests](https://github.com/bverble-catalyte/snapdragons-fastapi-service/actions/workflows/tests.yml/badge.svg)](https://github.com/bverble-catalyte/snapdragons-fastapi-service/actions/workflows/tests.yml)
+
 This is the Team Snapdragons FastAPI service.
 
 ## Contributing
