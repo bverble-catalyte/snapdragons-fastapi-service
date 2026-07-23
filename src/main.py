@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import FastAPI, status
 
 from database import temp_storage
@@ -16,7 +18,7 @@ def hello_name(name: str):
     return {"message": f"Hello, {name}!"}
 
 
-@app.get("/products")
+@app.get("/products", response_model=List[Product])
 def view_products():
     return temp_storage
 
