@@ -1,0 +1,100 @@
+{
+  "info": {
+    "_postman_id": "b1edf6a9-0b71-43aa-b3da-42bc2334110a",
+    "name": "Snapdragons",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56711438",
+    "_collection_link": "https://go.postman.co/collection/56711438-b1edf6a9-0b71-43aa-b3da-42bc2334110a?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Get all products",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8000/products",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "products"
+          ]
+        },
+        "description": "Retrieves a list of all products in the inventory. Each product includes the following fields:\n\n- **name** – The product name (e.g., `Basil Plant - 4in Pot`)\n- **unit** – The unit of measurement (e.g., `each`)\n- **cost_per_unit** – The cost price per unit (e.g., `1.75`)\n- **price_per_unit** – The retail price per unit (e.g., `4.99`)\n- **quantity_in_stock** – The current stock quantity (e.g., `40`)\n\n**Method:** GET  \n**URL:** `localhost:8000/products`  \n**Response:** Returns a JSON array of product objects."
+      },
+      "response": []
+    },
+    {
+      "name": "Create product",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"Basil Plant - 4in Pot\",\r\n    \"unit\": \"each\",\r\n    \"cost_per_unit\": \"1.75\",\r\n    \"price_per_unit\": \"4.99\",\r\n    \"quantity_in_stock\": \"40\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8000/products",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "products"
+          ]
+        },
+        "description": "Creates a new product in the inventory.\n\n**Endpoint:** `POST localhost:8000/products`\n\n### Request Body\n\nSend a JSON object with the following fields:\n\n| Field | Type | Description |\n|---|---|---|\n| `name` | string | The display name of the product (e.g. `\"Basil Plant - 4in Pot\"`) |\n| `unit` | string | The unit of measure for the product (e.g. `\"each\"`, `\"lb\"`, `\"oz\"`) |\n| `cost_per_unit` | string | The cost to the business per unit (e.g. `\"1.75\"`) |\n| `price_per_unit` | string | The retail price charged per unit (e.g. `\"4.99\"`) |\n| `quantity_in_stock` | string | The current number of units available in stock (e.g. `\"40\"`) |\n\n### Example Request Body\n\n```json\n{\n    \"name\": \"Basil Plant - 4in Pot\",\n    \"unit\": \"each\",\n    \"cost_per_unit\": \"1.75\",\n    \"price_per_unit\": \"4.99\",\n    \"quantity_in_stock\": \"40\"\n}\n```\n\n### Responses\n\n- **201 Created** – Product was successfully created. Returns the new product object.\n- **400 Bad Request** – Required fields are missing or invalid."
+      },
+      "response": []
+    },
+    {
+      "name": "Hello world",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8000",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000"
+        },
+        "description": "A simple health-check or smoke-test endpoint that verifies the server is running and reachable.\n\n**Endpoint:** `GET localhost:8000`\n\n**Response**\nReturns a JSON object with a greeting message:\n```json\n{\n  \"message\": \"Hello World\"\n}\n```\n\nUse this request to confirm the local server is up before running other requests in the collection."
+      },
+      "response": []
+    },
+    {
+      "name": "Custom hello",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8000/hello/:name",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "hello",
+            ":name"
+          ],
+          "variable": [
+            {
+              "key": "name",
+              "value": "Bryan"
+            }
+          ]
+        },
+        "description": "Returns a personalized greeting message for the given name.\n\n## Path Variables\n\n| Variable | Type   | Required | Description                                      |\n|----------|--------|----------|--------------------------------------------------|\n| `name`   | string | Yes      | The name to include in the greeting response.    |\n\n## Example Request\n\n```\nGET localhost:8000/hello/Bryan\n```\n\n## Example Response\n\n```json\n{\n  \"message\": \"Hello, Bryan!\"\n}\n```\n\n## Response Codes\n\n| Status | Description            |\n|--------|------------------------|\n| 200    | Greeting returned successfully |"
+      },
+      "response": []
+    }
+  ]
+}
