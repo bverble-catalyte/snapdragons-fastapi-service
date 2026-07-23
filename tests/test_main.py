@@ -19,6 +19,17 @@ def basil_plant_kwargs():
     }
 
 
+@pytest.fixture
+def invalid_product_kwargs():
+    return {
+        "name": "Happy Plant Fertilizer",
+        "unit": "bag",
+        "cost_per_unit": "15.50",
+        "price_per_unit": "20.99",
+        "quantity_in_stock": "-5",
+    }
+
+
 def test_read_root():
     response = client.get("/")
 
@@ -44,6 +55,11 @@ def test_create_product(basil_plant_kwargs):
         and "quantity_in_stock" in data
     )
     assert isinstance(data["name"], str)
+
+
+def test_create_product_with_invalid_payload_returns_422(invalid_product_kwargs):
+    response = client.post("/products", json=invalid_product_kwargs)
+    assert response.status_code == 422
 
 
 def test_view_products(monkeypatch, basil_plant_kwargs):
