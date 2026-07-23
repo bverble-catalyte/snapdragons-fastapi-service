@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom Garden Theme CSS (Targeted Light Theme Overrides)
+# Custom Garden Theme CSS
 st.markdown("""
     <style>
     /* Force Light Backgrounds Throughout the App */
@@ -33,7 +33,7 @@ st.markdown("""
         max-width: 95% !important;
     }
     
-    /* Header Banner with Specific White Text Rules */
+    /* Header Banner */
     .main-header {
         background: linear-gradient(135deg, #2D5A27 0%, #4E8752 100%);
         padding: 1.25rem 1.8rem;
@@ -101,7 +101,7 @@ st.markdown("""
         padding: 1.5rem !important;
     }
 
-    /* Clean JSON and Code Block Background Fix */
+    /* Clean JSON Container */
     [data-testid="stJson"], pre {
         background-color: #ffffff !important;
         border: 1px solid #c8e6c9 !important;
@@ -121,20 +121,6 @@ st.markdown("""
     }
     .stButton>button[kind="primary"]:hover {
         background-color: #1e3f1a !important;
-    }
-
-    /* Result Card Formatting */
-    .result-card {
-        background-color: #ffffff;
-        border: 1px solid #c8e6c9;
-        border-radius: 8px;
-        padding: 15px;
-        margin-top: 10px;
-    }
-    .result-card-item {
-        font-size: 0.95rem;
-        margin-bottom: 6px;
-        color: #1a331e;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -218,7 +204,8 @@ elif demo_stage == "🔎 Inventory Search":
     st.write("Retrieve real-time product pricing and stock details directly from the core service.")
     
     submit_button = False
-    search_id = ""
+    search_name = ""
+    retrieve_all = False
 
     col1, col2 = st.columns([1, 1.5])
     
@@ -227,7 +214,13 @@ elif demo_stage == "🔎 Inventory Search":
         category = st.selectbox("Category", ["Products", "Customers (Upcoming)", "Orders (Upcoming)"])
         
         if category == "Products":
-            search_id = st.text_input("Product Name Filter", value="Basil Plant 4in Pot")
+            retrieve_all = st.checkbox(f"Retrieve all {category}", value=False)
+            
+            search_name = st.text_input(
+                "Product Name Filter", 
+                value="Basil Plant 4in Pot", 
+                disabled=retrieve_all
+            )
             submit_button = st.button("Fetch Details", type="primary")
         else:
             st.caption("🔒 This category will be available in a future release.")
@@ -237,11 +230,23 @@ elif demo_stage == "🔎 Inventory Search":
         if submit_button:
             with st.spinner("Querying engine..."):
                 try:
-                    response = requests.get(f"{FASTAPI_URL}/products")
-                    if response.status_code == 200:
-                        st.json(response.json())
+                    if retrieve_all:
+                        endpoint = f"{FASTAPI_URL}/products"
+                        params = {}
                     else:
-                        st.error(f"Record not found. (Status Code: {response.status_code})")
+                        endpoint = f"{FASTAPI_URL}/products/search"
+                        params = {"name": search_name}
+
+                    response = requests.get(endpoint, params=params)
+                    if response.status_code == 200:
+                        data = response.json()
+                        if data:
+                            st.success(f"Found {len(data)} record(s).")
+                            st.json(data)
+                        else:
+                            st.warning("No records found for the given search criteria.")
+                    else:
+                        st.error(f"Record not found.")
                 except requests.RequestException:
                     st.error("⚠️ Server Offline: Could not connect to the backend engine.")
         else:
