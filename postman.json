@@ -1,33 +1,56 @@
 {
   "info": {
-    "_postman_id": "b1edf6a9-0b71-43aa-b3da-42bc2334110a",
+    "_postman_id": "e6d174ec-1507-4b6f-8d29-6fbb65f81fd2",
     "name": "Snapdragons",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "56711438",
-    "_collection_link": "https://go.postman.co/collection/56711438-b1edf6a9-0b71-43aa-b3da-42bc2334110a?source=collection_link"
+    "_exporter_id": "56711512",
+    "_collection_link": "https://go.postman.co/collection/56711512-e6d174ec-1507-4b6f-8d29-6fbb65f81fd2?source=collection_link"
   },
   "item": [
     {
-      "name": "Get all products",
+      "name": "Hello World",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "localhost:8000/products",
+          "raw": "localhost:8000",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000"
+        },
+        "description": "A simple health-check or smoke-test endpoint that verifies the server is running and reachable.\n\n**Endpoint:** `GET localhost:8000`\n\n**Response**\nReturns a JSON object with a greeting message:\n```json\n{\n  \"message\": \"Hello World\"\n}\n```\n\nUse this request to confirm the local server is up before running other requests in the collection."
+      },
+      "response": []
+    },
+    {
+      "name": "Hello Custom Name",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8000/hello/:name",
           "host": [
             "localhost"
           ],
           "port": "8000",
           "path": [
-            "products"
+            "hello",
+            ":name"
+          ],
+          "variable": [
+            {
+              "key": "name",
+              "value": "Bryan"
+            }
           ]
         },
-        "description": "Retrieves a list of all products in the inventory. Each product includes the following fields:\n\n- **name** – The product name (e.g., `Basil Plant - 4in Pot`)\n- **unit** – The unit of measurement (e.g., `each`)\n- **cost_per_unit** – The cost price per unit (e.g., `1.75`)\n- **price_per_unit** – The retail price per unit (e.g., `4.99`)\n- **quantity_in_stock** – The current stock quantity (e.g., `40`)\n\n**Method:** GET  \n**URL:** `localhost:8000/products`  \n**Response:** Returns a JSON array of product objects."
+        "description": "Returns a personalized greeting message for the given name.\n\n## Path Variables\n\n| Variable | Type   | Required | Description                                      |\n|----------|--------|----------|--------------------------------------------------|\n| `name`   | string | Yes      | The name to include in the greeting response.    |\n\n## Example Request\n\n```\nGET localhost:8000/hello/Bryan\n```\n\n## Example Response\n\n```json\n{\n  \"message\": \"Hello, Bryan!\"\n}\n```\n\n## Response Codes\n\n| Status | Description            |\n|--------|------------------------|\n| 200    | Greeting returned successfully |"
       },
       "response": []
     },
     {
-      "name": "Create product",
+      "name": "Create Product",
       "request": {
         "method": "POST",
         "header": [],
@@ -55,44 +78,71 @@
       "response": []
     },
     {
-      "name": "Hello world",
+      "name": "Get All Products",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "localhost:8000",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000"
-        },
-        "description": "A simple health-check or smoke-test endpoint that verifies the server is running and reachable.\n\n**Endpoint:** `GET localhost:8000`\n\n**Response**\nReturns a JSON object with a greeting message:\n```json\n{\n  \"message\": \"Hello World\"\n}\n```\n\nUse this request to confirm the local server is up before running other requests in the collection."
-      },
-      "response": []
-    },
-    {
-      "name": "Custom hello",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "localhost:8000/hello/:name",
+          "raw": "localhost:8000/products",
           "host": [
             "localhost"
           ],
           "port": "8000",
           "path": [
-            "hello",
-            ":name"
-          ],
-          "variable": [
-            {
-              "key": "name",
-              "value": "Bryan"
-            }
+            "products"
           ]
         },
-        "description": "Returns a personalized greeting message for the given name.\n\n## Path Variables\n\n| Variable | Type   | Required | Description                                      |\n|----------|--------|----------|--------------------------------------------------|\n| `name`   | string | Yes      | The name to include in the greeting response.    |\n\n## Example Request\n\n```\nGET localhost:8000/hello/Bryan\n```\n\n## Example Response\n\n```json\n{\n  \"message\": \"Hello, Bryan!\"\n}\n```\n\n## Response Codes\n\n| Status | Description            |\n|--------|------------------------|\n| 200    | Greeting returned successfully |"
+        "description": "Retrieves a list of all products in the inventory. Each product includes the following fields:\n\n- **name** – The product name (e.g., `Basil Plant - 4in Pot`)\n- **unit** – The unit of measurement (e.g., `each`)\n- **cost_per_unit** – The cost price per unit (e.g., `1.75`)\n- **price_per_unit** – The retail price per unit (e.g., `4.99`)\n- **quantity_in_stock** – The current stock quantity (e.g., `40`)\n\n**Method:** GET  \n**URL:** `localhost:8000/products`  \n**Response:** Returns a JSON array of product objects."
+      },
+      "response": []
+    },
+    {
+      "name": "Search Products",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8000/products/search",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "products",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "name",
+              "value": "basil",
+              "disabled": true
+            },
+            {
+              "key": "name",
+              "value": "basilplant",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "name",
+              "value": "BasilPlant",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "name",
+              "value": "4in",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "unit",
+              "value": "each",
+              "type": "text",
+              "disabled": true
+            }
+          ]
+        }
       },
       "response": []
     }
