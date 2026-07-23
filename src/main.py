@@ -1,7 +1,5 @@
-from typing import List
-
-from fastapi import FastAPI, status
-
+from typing import Annotated, List
+from fastapi import FastAPI, status, Query
 from database import temp_storage
 from models.product import Product
 
@@ -21,6 +19,21 @@ def hello_name(name: str):
 @app.get("/products", response_model=List[Product])
 def view_products():
     return temp_storage
+
+
+@app.get("/products/search")
+def search_products(
+    name: Annotated[str, Query(description = "The product name is required.")],
+    unit: Annotated[str | None, Query(description = "Optional product unit.")] = None
+):
+    def normalize(s: str) -> str:
+        return "".join(s.lower().split())
+
+    return [
+        product for product in temp_storage
+        if normalize(name) in normalize(product["name"])
+        and (unit is None or product["unit"] == unit)
+    ]
 
 
 @app.post("/products", status_code=status.HTTP_201_CREATED)
