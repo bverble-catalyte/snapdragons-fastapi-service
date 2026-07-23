@@ -1,5 +1,7 @@
 # Team Snapdragons - FastAPI Service
 
+<img width="1707" height="400" alt="snapdragons-banner" src="https://github.com/user-attachments/assets/d0f5f5ca-39f6-4ddb-b75b-0c0e5a3a0da6" />
+
 [![Tests](https://github.com/bverble-catalyte/snapdragons-fastapi-service/actions/workflows/tests.yml/badge.svg)](https://github.com/bverble-catalyte/snapdragons-fastapi-service/actions/workflows/tests.yml)
 
 This is the Team Snapdragons FastAPI service.
