@@ -33,8 +33,14 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Run with:
+Run Server with:
 
 ```
 fastapi dev src/main.py
+```
+
+Run Frontend with:
+
+```
+streamlit run app.py
 ```
