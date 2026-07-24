@@ -123,3 +123,30 @@ Returns the created product. See above for schema.
 
 - **201 Created:** On success
 - **422 Unprocessable Content:** If any required fields are missing or invalid
+
+#### Postgres Dependencies Installation:
+
+Ensure Postgres is installed, then:
+
+```
+pip install sqlalchemy psycopg2-binary
+pip freeze > requirements.txt
+```
+
+#### Database Connection Configuration:
+
+The database connection is configured via `DATABASE_URL`, read at startup, and passed to `create_engine()`:
+
+```
+DATABASE_URL = "postgresql://root:root@127.0.0.1:5432/gardendb"
+engine = create_engine(DATABASE_URL, echo=True, future=True)
+```
+
+#### Schema Drop-and-Recreate Behavior
+
+On every app startup during development, the schema is dropped and recreated:
+
+```
+Base.metadata.drop_all(bind=engine)
+Base.metadata.create_all(bind=engine)
+```
