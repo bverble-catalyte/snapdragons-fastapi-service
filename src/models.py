@@ -2,6 +2,7 @@ from decimal import Decimal
 from typing import Annotated
 
 from pydantic import BaseModel, Field, StringConstraints
+from sqlalchemy import Identity, Integer, Numeric
 from sqlalchemy.orm import Mapped, mapped_column
 
 from database import Base
@@ -28,9 +29,15 @@ class ProductCreate(BaseModel):
 class Product(Base):
     __tablename__ = "product"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, Identity(always=True), primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     unit: Mapped[str] = mapped_column(nullable=False)
-    cost_per_unit: Mapped[Decimal] = mapped_column(nullable=False)
-    price_per_unit: Mapped[Decimal] = mapped_column(nullable=False)
-    quantity_in_stock: Mapped[Decimal] = mapped_column(nullable=False)
+    cost_per_unit: Mapped[Decimal] = mapped_column(
+        Numeric(precision=10, scale=2), nullable=False
+    )
+    price_per_unit: Mapped[Decimal] = mapped_column(
+        Numeric(precision=10, scale=2), nullable=False
+    )
+    quantity_in_stock: Mapped[Decimal] = mapped_column(
+        Numeric(precision=10, scale=2), nullable=False
+    )
