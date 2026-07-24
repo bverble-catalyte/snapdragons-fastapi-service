@@ -1,11 +1,36 @@
 from typing import Annotated, List
 
-from fastapi import FastAPI, Query, status
+import models
+from fastapi import Depends, FastAPI, HTTPException, Query, status
+from models import Product, ProductCreate
+from sqlalchemy.orm import Session
 
-from database import temp_storage
-from models.product import Product
+from database import Base, SessionLocal, engine, temp_storage
 
+Base.metadata.drop_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 app = FastAPI()
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+@app.get("/db-check")
+def db_check(db: Session = Depends(get_db)):
+    try:
+        # Perform a simple query to verify connection
+        count = db.query(Product).count()
+        return {"status": "connected", "product_count": count}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database connection failed: {str(e)}",
+        )
 
 
 @app.get("/")
@@ -18,7 +43,7 @@ def hello_name(name: str):
     return {"message": f"Hello, {name}!"}
 
 
-@app.get("/products", response_model=List[Product])
+@app.get("/products", response_model=List[ProductCreate])
 def view_products():
     return temp_storage
 
@@ -51,7 +76,7 @@ def search_products(
 
 
 @app.post("/products", status_code=status.HTTP_201_CREATED)
-def create_product(product: Product):
+def create_product(product: ProductCreate):
     """Handles POST requests for /products endpoint and appends product for in-memory storage.
 
     Args:
