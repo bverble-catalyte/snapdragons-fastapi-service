@@ -1,15 +1,23 @@
+from contextlib import asynccontextmanager
 from typing import Annotated, List
 
-import models
 from fastapi import Depends, FastAPI, HTTPException, Query, status
-from models import Product, ProductCreate
+from sqlalchemy import create_engine, insert
 from sqlalchemy.orm import Session
 
+import models
 from database import Base, SessionLocal, engine, temp_storage
+from models import Product, ProductCreate
 
-Base.metadata.drop_all(bind=engine)
-Base.metadata.create_all(bind=engine)
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Runs on app startup (Only creates tables if they don't exist yet)
+    Base.metadata.create_all(bind=engine)
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 def get_db():
@@ -75,8 +83,10 @@ def search_products(
     ]
 
 
-@app.post("/products", status_code=status.HTTP_201_CREATED)
-def create_product(product: ProductCreate):
+@app.post(
+    "/products", status_code=status.HTTP_201_CREATED, response_model=ProductCreate
+)
+def create_product(product: ProductCreate, db: Session = Depends(get_db)):
     """Handles POST requests for /products endpoint and appends product for in-memory storage.
 
     Args:
@@ -85,5 +95,15 @@ def create_product(product: ProductCreate):
     Returns:
         Status Code - 201 Created with sent data.
     """
-    temp_storage.append(product.model_dump())
+    stmt = insert(Product).values(
+        name=product.name,
+        unit=product.unit,
+        cost_per_unit=product.cost_per_unit,
+        price_per_unit=product.price_per_unit,
+        quantity_in_stock=product.quantity_in_stock,
+    )
+
+    db.execute(stmt)
+    db.commit()
+
     return product
