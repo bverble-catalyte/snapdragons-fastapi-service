@@ -1,6 +1,7 @@
-from models import Product
+from sqlalchemy import select
 
 from database import Base, SessionLocal, engine
+from models import Product
 
 
 def test_database_connection():
@@ -43,3 +44,8 @@ def test_database_connection():
 
 if __name__ == "__main__":
     test_database_connection()
+
+
+def sample_db_test(db_session, seed_product):
+    products = db_session.scalars(select(Product)).all()
+    assert len(products) != 0
