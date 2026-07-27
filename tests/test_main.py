@@ -39,19 +39,6 @@ def invalid_product_kwargs():
     }
 
 
-def test_read_root(client):
-    response = client.get("/")
-
-    assert response.status_code == 200
-    assert response.json() == {"message": "Hello World"}
-
-
-def test_hello_name(client):
-    response = client.get("/hello/Jimmie")
-    assert response.status_code == 200
-    assert response.json() == {"message": "Hello, Jimmie!"}
-
-
 def test_create_product(client, basil_plant_kwargs):
     response = client.post("/products", json=basil_plant_kwargs)
     assert response.status_code == 201
@@ -73,15 +60,17 @@ def test_create_product_with_invalid_payload_returns_422(
     assert response.status_code == 422
 
 
-# def test_view_products(monkeypatch, basil_plant_kwargs):
-#     products = [ProductCreate(**basil_plant_kwargs)]
-#     monkeypatch.setattr("main.temp_storage", products)
-#
-#     response = client.get("/products")
-#     assert response.status_code == 200
-#
-#     expected = [p.model_dump(mode="json") for p in products]
-#     assert response.json() == expected
+def test_view_products(client, basil_plant_kwargs, seed_product, db_session):
+    products = db_session.query(Product).all()
+
+    response = client.get("/products")
+    assert response.status_code == 200
+
+    expected = [
+        ProductRead.model_validate(p, from_attributes=True).model_dump(mode="json")
+        for p in products
+    ]
+    assert response.json() == expected
 
 
 def test_get_product_should_return_product(client, db_session, seed_product):

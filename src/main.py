@@ -54,17 +54,7 @@ def db_check(db: Session = Depends(get_db)):
         )
 
 
-@app.get("/")
-def hello_world():
-    return {"message": "Hello World"}
-
-
-@app.get("/hello/{name}")
-def hello_name(name: str):
-    return {"message": f"Hello, {name}!"}
-
-
-@app.get("/products", response_model=List[ProductCreate])
+@app.get("/products", response_model=List[ProductRead])
 def view_products(db: Session = Depends(get_db)):
     """Views all products within the database.
 
@@ -112,12 +102,6 @@ def search_products(
             and (unit is None or Product.unit == unit)
         )
     ]
-    # return [
-    #     product
-    #     for product in temp_storage
-    #     if normalize(name) in normalize(product["name"])
-    #     and (unit is None or product["unit"] == unit)
-    # ]
 
 
 @app.post(
