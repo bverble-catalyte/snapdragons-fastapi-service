@@ -2,11 +2,10 @@ from contextlib import asynccontextmanager
 from typing import Annotated, List
 
 from fastapi import Depends, FastAPI, HTTPException, Query, status
-from sqlalchemy import create_engine, insert
+from sqlalchemy import insert
 from sqlalchemy.orm import Session
 
-import models
-from database import Base, SessionLocal, engine, temp_storage
+from database import Base, engine, get_db
 from models import Product, ProductCreate, ProductRead
 
 
@@ -18,15 +17,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-temp_storage = []
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+DbSession = Annotated[Session, Depends(get_db)]
 
 
 def normalize(s: str) -> str:
@@ -42,7 +33,7 @@ def normalize(s: str) -> str:
 
 
 @app.get("/db-check")
-def db_check(db: Session = Depends(get_db)):
+def db_check(db: DbSession):
     try:
         # Perform a simple query to verify connection
         count = db.query(Product).count()
@@ -55,7 +46,7 @@ def db_check(db: Session = Depends(get_db)):
 
 
 @app.get("/products", response_model=List[ProductRead])
-def view_products(db: Session = Depends(get_db)):
+def view_products(db: DbSession):
     """Views all products within the database.
 
     Args:
@@ -70,9 +61,9 @@ def view_products(db: Session = Depends(get_db)):
 
 @app.get("/products/search", response_model=List[ProductRead])
 def search_products(
+    db: DbSession,
     name: Annotated[str, Query(description="The product name is required.")],
     unit: Annotated[str | None, Query(description="Optional product unit.")] = None,
-    db: Session = Depends(get_db),
 ):
     """Searches the database for products with matching name and unit.
 
@@ -93,8 +84,8 @@ def search_products(
 
 
 @app.get("/products/{id}", response_model=ProductRead)
-def get_product(id: int, session=Depends(get_db)) -> Product:
-    product = session.get(Product, id)
+def get_product(db: DbSession, id: int) -> Product:
+    product = db.get(Product, id)
     if product is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -106,7 +97,7 @@ def get_product(id: int, session=Depends(get_db)) -> Product:
 @app.post(
     "/products", status_code=status.HTTP_201_CREATED, response_model=ProductCreate
 )
-def create_product(product: ProductCreate, db: Session = Depends(get_db)):
+def create_product(db: DbSession, product: ProductCreate):
     """Handles POST requests for /products endpoint and appends product for in-memory storage.
 
     Args:
