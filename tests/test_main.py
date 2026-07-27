@@ -79,3 +79,26 @@ def test_get_product_should_return_product(client, db_session, seed_product):
     product_json = ProductRead.model_validate(product).model_dump(mode="json")
     assert response.status_code == 200
     assert response.json() == product_json
+
+
+@pytest.mark.parametrize(
+    "name, unit, result",
+    [
+        ("pot", None, 1),
+        ("basil", None, 0),
+        ("pot", "each", 1),
+        ("pot", "bag", 0),
+    ],
+)
+def test_search_products_should_return_products(
+    name, unit, result, client, db_session, seed_product
+):
+    params = {}
+    if name:
+        params["name"] = name
+    if unit:
+        params["unit"] = unit
+
+    response = client.get("/products/search", params=params)
+    assert len(response.json()) == result
+    assert response.status_code == 200
