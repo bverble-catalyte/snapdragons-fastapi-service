@@ -66,6 +66,7 @@ This project contains a `postman.json` file which can be imported into Postman t
 | Method | Path | Description |
 | --- | --- | --- |
 | `GET` | `/products` | List products
+| `GET` | `/products/{id}` | View product
 | `GET` | `/products/search` | Search products by name or stock keeping unit
 | `POST` | `/products` | Create product
 
@@ -75,11 +76,24 @@ List all products.
 
 #### Response Body (JSON)
 
-Returns an array of product objects. See `POST /products` for schema.
+Returns an array of `Product` objects.
 
 #### Response Codes:
 
 - **200 OK:** On success
+
+### `GET /products/{id}`
+
+View product with identifier `id`.
+
+#### Response Body (JSON)
+
+Returns a `Product` object.
+
+#### Response Codes:
+
+- **200 OK:** On success
+- **404 Not Found:** If no such product exists
 
 ### `GET /products/search`
 
@@ -94,7 +108,7 @@ Search for products by name or stock keeping unit.
 
 #### Response Body (JSON)
 
-Returns an array of product objects. See `POST /products` for schema.
+Returns an array of `Product` objects.
 
 #### Response Codes:
 
@@ -107,6 +121,32 @@ Create a product.
 
 #### Request Body (JSON)
 
+A `ProductCreate` object.
+
+#### Response Body (JSON)
+
+Returns the created `Product` object.
+
+#### Response Codes:
+
+- **201 Created:** On success
+- **422 Unprocessable Content:** If any required fields are missing or invalid
+
+### JSON Schemas
+
+#### Product
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | int | yes | The product's unique identifier |
+| `name` | string | yes | The product name |
+| `unit` | string | yes | The product's unit of sale (e.g. "each", "bag", "lb") |
+| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit |
+| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit |
+| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units |
+
+#### ProductCreate
+
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
 | `name` | string | yes | The product name |
@@ -115,16 +155,7 @@ Create a product.
 | `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit |
 | `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units |
 
-#### Response Body (JSON)
-
-Returns the created product. See above for schema.
-
-#### Response Codes:
-
-- **201 Created:** On success
-- **422 Unprocessable Content:** If any required fields are missing or invalid
-
-#### Postgres Dependencies Installation:
+## Postgres Dependencies Installation:
 
 Ensure Postgres is installed, then:
 
@@ -133,7 +164,7 @@ pip install sqlalchemy psycopg2-binary
 pip freeze > requirements.txt
 ```
 
-#### Database Connection Configuration:
+### Database Connection Configuration:
 
 The database connection is configured via `DATABASE_URL`, read at startup, and passed to `create_engine()`:
 
@@ -142,7 +173,7 @@ DATABASE_URL = "postgresql://root:root@127.0.0.1:5432/gardendb"
 engine = create_engine(DATABASE_URL, echo=True, future=True)
 ```
 
-#### Schema Drop-and-Recreate Behavior
+### Schema Drop-and-Recreate Behavior
 
 On every app startup during development, the schema is dropped and recreated:
 
