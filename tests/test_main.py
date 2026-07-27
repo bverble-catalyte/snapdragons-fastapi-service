@@ -1,9 +1,9 @@
 import pytest
 from fastapi.testclient import TestClient
-from models import ProductCreate
 
 import database
 from main import app
+from models import ProductCreate
 
 client = TestClient(app)
 
@@ -64,7 +64,7 @@ def test_create_product_with_invalid_payload_returns_422(invalid_product_kwargs)
 
 def test_view_products(monkeypatch, basil_plant_kwargs):
     products = [ProductCreate(**basil_plant_kwargs)]
-    monkeypatch.setattr(database, "temp_storage", products)
+    monkeypatch.setattr("main.temp_storage", products)
 
     response = client.get("/products")
     assert response.status_code == 200
