@@ -15,13 +15,21 @@ DATABASE_URL = f"postgresql://root:root@localhost/{TEST_DB_NAME}"
 def create_test_database():
     env = os.environ.copy()
     env["PGPASSWORD"] = "root"
-    subprocess.run(["createdb", "-U", "root", TEST_DB_NAME], env=env)
+    subprocess.run(
+        ["createdb", "-U", "root", "-h", "localhost", "-p", "5432", TEST_DB_NAME],
+        env=env,
+        check=True,
+    )
 
 
 def destroy_test_database():
     env = os.environ.copy()
     env["PGPASSWORD"] = "root"
-    subprocess.run(["dropdb", "-U", "root", TEST_DB_NAME], env=env)
+    subprocess.run(
+        ["dropdb", "-U", "root", "-h", "localhost", "-p", "5432", TEST_DB_NAME],
+        env=env,
+        check=True,
+    )
 
 
 @pytest.fixture(scope="session")
