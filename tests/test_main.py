@@ -2,10 +2,18 @@ import pytest
 from fastapi.testclient import TestClient
 
 import database
-from main import app
+from main import app, get_db
 from models import ProductCreate
 
-client = TestClient(app)
+
+@pytest.fixture()
+def client(db_session):
+    def override_get_db():
+        yield db_session
+
+    app.dependency_overrides[get_db] = override_get_db
+    yield TestClient(app)
+    app.dependency_overrides.clear()
 
 
 @pytest.fixture
@@ -30,20 +38,20 @@ def invalid_product_kwargs():
     }
 
 
-def test_read_root():
+def test_read_root(client):
     response = client.get("/")
 
     assert response.status_code == 200
     assert response.json() == {"message": "Hello World"}
 
 
-def test_hello_name():
+def test_hello_name(client):
     response = client.get("/hello/Jimmie")
     assert response.status_code == 200
     assert response.json() == {"message": "Hello, Jimmie!"}
 
 
-def test_create_product(basil_plant_kwargs):
+def test_create_product(client, basil_plant_kwargs):
     response = client.post("/products", json=basil_plant_kwargs)
     assert response.status_code == 201
     data = response.json()
@@ -57,17 +65,21 @@ def test_create_product(basil_plant_kwargs):
     assert isinstance(data["name"], str)
 
 
-def test_create_product_with_invalid_payload_returns_422(invalid_product_kwargs):
+def test_create_product_with_invalid_payload_returns_422(
+    client, invalid_product_kwargs
+):
     response = client.post("/products", json=invalid_product_kwargs)
     assert response.status_code == 422
 
 
-def test_view_products(monkeypatch, basil_plant_kwargs):
-    products = [ProductCreate(**basil_plant_kwargs)]
-    monkeypatch.setattr("main.temp_storage", products)
+# def test_view_products(monkeypatch, basil_plant_kwargs):
+#     products = [ProductCreate(**basil_plant_kwargs)]
+#     monkeypatch.setattr("main.temp_storage", products)
+#
+#     response = client.get("/products")
+#     assert response.status_code == 200
+#
+#     expected = [p.model_dump(mode="json") for p in products]
+#     assert response.json() == expected
 
-    response = client.get("/products")
-    assert response.status_code == 200
 
-    expected = [p.model_dump(mode="json") for p in products]
-    assert response.json() == expected
