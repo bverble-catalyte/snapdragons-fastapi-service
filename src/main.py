@@ -29,6 +29,18 @@ def get_db():
         db.close()
 
 
+def normalize(s: str) -> str:
+    """Normalizes the formatting of strings for search.
+
+    Args:
+        s (str): The string to be reformatted.
+
+    Returns:
+        A normalized string for search.
+    """
+    return "".join(s.lower().split())
+
+
 @app.get("/db-check")
 def db_check(db: Session = Depends(get_db)):
     try:
