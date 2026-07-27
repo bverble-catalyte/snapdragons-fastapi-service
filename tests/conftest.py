@@ -58,15 +58,18 @@ def db_session(db_engine):
 
 
 @pytest.fixture()
-def seed_product(db_session):
-    product = Product(
-        **{
-            "name": "12in Terra Cotta Clay Pot",
-            "unit": "each",
-            "cost_per_unit": Decimal("5.00"),
-            "price_per_unit": Decimal("8.75"),
-            "quantity_in_stock": Decimal("55"),
-        }
-    )
+def valid_product_kwargs():
+    return {
+        "name": "12in Terra Cotta Clay Pot",
+        "unit": "each",
+        "cost_per_unit": Decimal("5.00"),
+        "price_per_unit": Decimal("8.75"),
+        "quantity_in_stock": Decimal("55"),
+    }
+
+
+@pytest.fixture()
+def seed_product(db_session, valid_product_kwargs):
+    product = Product(**valid_product_kwargs)
     db_session.add(product)
     db_session.commit()
