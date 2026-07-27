@@ -68,17 +68,6 @@ def view_products(db: Session = Depends(get_db)):
     return products
 
 
-@app.get("/products/{id}", response_model=ProductRead)
-def get_product(id: int, session=Depends(get_db)) -> Product:
-    product = session.get(Product, id)
-    if product is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Product with id {id} not found",
-        )
-    return product
-
-
 @app.get("/products/search")
 def search_products(
     name: Annotated[str, Query(description="The product name is required.")],
@@ -95,13 +84,23 @@ def search_products(
     Returns:
         A list of products with a matching name and unit.
     """
+    query = db.query(Product)
+    if unit is not None:
+        query = query.filter(Product.unit == unit)
 
-    return [
-        db.query(Product).filter(
-            normalize(name) in normalize(Product.name)
-            and (unit is None or Product.unit == unit)
+    normalized_name = normalize(name)
+    return [p for p in query.all() if normalized_name in normalize(p.name)]
+
+
+@app.get("/products/{id}", response_model=ProductRead)
+def get_product(id: int, session=Depends(get_db)) -> Product:
+    product = session.get(Product, id)
+    if product is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Product with id {id} not found",
         )
-    ]
+    return product
 
 
 @app.post(
