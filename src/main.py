@@ -53,35 +53,48 @@ def hello_name(name: str):
 
 
 @app.get("/products", response_model=List[ProductCreate])
-def view_products():
-    return temp_storage
+def view_products(db: Session = Depends(get_db)):
+    """Views all products within the database.
+
+    Args:
+        db (Session): The database session.
+
+    Returns:
+        A list of products in the database.
+    """
+    products = db.query(Product).all()
+    return products
 
 
 @app.get("/products/search")
 def search_products(
     name: Annotated[str, Query(description="The product name is required.")],
     unit: Annotated[str | None, Query(description="Optional product unit.")] = None,
+    db: Session = Depends(get_db),
 ):
-    """Handles GET requests for /products/search by searching for matching products in-memory.
+    """Searches the database for products with matching name and unit.
 
     Args:
         name (str): The product name.
         unit (str): The product's unit of sale; optional.
+        db (Session): The database session.
 
     Returns:
         A list of products with a matching name and unit.
     """
 
-    # Helper: Normalizes the formatting of strings for search.
-    def normalize(s: str) -> str:
-        return "".join(s.lower().split())
-
     return [
-        product
-        for product in temp_storage
-        if normalize(name) in normalize(product["name"])
-        and (unit is None or product["unit"] == unit)
+        db.query(Product).filter(
+            normalize(name) in normalize(Product.name)
+            and (unit is None or Product.unit == unit)
+        )
     ]
+    # return [
+    #     product
+    #     for product in temp_storage
+    #     if normalize(name) in normalize(product["name"])
+    #     and (unit is None or product["unit"] == unit)
+    # ]
 
 
 @app.post(
