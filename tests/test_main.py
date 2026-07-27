@@ -1,9 +1,10 @@
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import select
 
 import database
 from main import app, get_db
-from models import ProductCreate
+from models import Product, ProductCreate, ProductRead
 
 
 @pytest.fixture()
@@ -83,3 +84,9 @@ def test_create_product_with_invalid_payload_returns_422(
 #     assert response.json() == expected
 
 
+def test_get_product_should_return_product(client, db_session, seed_product):
+    product = db_session.scalars(select(Product)).first()
+    response = client.get(f"/products/{product.id}")
+    product_json = ProductRead.model_validate(product).model_dump(mode="json")
+    assert response.status_code == 200
+    assert response.json() == product_json

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 import models
 from database import Base, SessionLocal, engine, temp_storage
-from models import Product, ProductCreate
+from models import Product, ProductCreate, ProductRead
 
 
 @asynccontextmanager
@@ -76,6 +76,17 @@ def view_products(db: Session = Depends(get_db)):
     """
     products = db.query(Product).all()
     return products
+
+
+@app.get("/products/{id}", response_model=ProductRead)
+def get_product(id: int, session=Depends(get_db)) -> Product:
+    product = session.get(Product, id)
+    if product is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Product with id {id} not found",
+        )
+    return product
 
 
 @app.get("/products/search")
