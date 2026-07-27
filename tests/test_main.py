@@ -1,6 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import select
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.orm import Session
 
 import database
 from main import app, get_db
@@ -102,3 +104,24 @@ def test_search_products_should_return_products(
     response = client.get("/products/search", params=params)
     assert len(response.json()) == result
     assert response.status_code == 200
+
+
+def test_db_check_returns_success(client, seed_product):
+    response = client.get("/db-check")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "connected"
+    assert body["product_count"] == 1
+
+
+def test_db_check_does_not_leak_internals(client, monkeypatch):
+    def bad_query(*args, **kwargs):
+        raise OperationalError(
+            "Connection to server 10.0.0.2 failed", None, Exception()
+        )
+
+    monkeypatch.setattr(Session, "query", bad_query)
+    response = client.get("/db-check")
+
+    assert response.status_code == 500
+    assert "10.0.0.2" not in response.json()["detail"]

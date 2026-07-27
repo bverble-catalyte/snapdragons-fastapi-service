@@ -41,7 +41,7 @@ def db_check(db: DbSession):
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Database connection failed: {str(e)}",
+            detail=f"Database health check failed",
         )
 
 
