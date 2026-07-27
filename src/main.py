@@ -1,23 +1,17 @@
-from contextlib import asynccontextmanager
 from typing import Annotated, List
 
 from fastapi import Depends, FastAPI, HTTPException, Query, status
-from sqlalchemy import create_engine, insert
+from sqlalchemy import insert
 from sqlalchemy.orm import Session
 
 import models
 from database import Base, SessionLocal, engine, temp_storage
 from models import Product, ProductCreate
 
+Base.metadata.drop_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Runs on app startup (Only creates tables if they don't exist yet)
-    Base.metadata.create_all(bind=engine)
-    yield
-
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 temp_storage = []
 
 
