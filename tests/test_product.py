@@ -1,19 +1,9 @@
 from decimal import Decimal
 
 import pytest
-from models import ProductCreate
 from pydantic import ValidationError
 
-
-@pytest.fixture()
-def valid_product_kwargs():
-    return {
-        "name": "12in Terra Cotta Clay Pot",
-        "unit": "each",
-        "cost_per_unit": Decimal("5.00"),
-        "price_per_unit": Decimal("8.75"),
-        "quantity_in_stock": Decimal("55"),
-    }
+from models import ProductCreate
 
 
 def test_product_name_must_be_nonempty(valid_product_kwargs):
