@@ -68,7 +68,7 @@ def view_products(db: Session = Depends(get_db)):
     return products
 
 
-@app.get("/products/search")
+@app.get("/products/search", response_model=List[ProductRead])
 def search_products(
     name: Annotated[str, Query(description="The product name is required.")],
     unit: Annotated[str | None, Query(description="Optional product unit.")] = None,
