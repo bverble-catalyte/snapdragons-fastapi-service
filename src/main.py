@@ -126,7 +126,7 @@ def update_product(db: DbSession, product: ProductCreate, id: int) -> ProductRea
     if update_product is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Product with id{id} not found",
+            detail=f"Product with id {id} not found",
         )
     query.update(product.model_dump())
     db.commit()
