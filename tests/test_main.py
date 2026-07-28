@@ -151,15 +151,16 @@ def test_delete_should_remove_product_from_all_endpoint_responses(
     eid = first_existing_product.id
 
     view_one_before = client.get(f"/products/{eid}")
+    search_query = view_one_before.json()["name"][:3]
     view_all_before = client.get("/products")
-    search_before = client.get("/products/search", params={"name": "pot"})
+    search_before = client.get("/products/search", params={"name": search_query})
 
     response = client.delete(f"/products/{eid}")
     assert response.status_code == 204
 
     view_one_after = client.get(f"/products/{eid}")
     view_all_after = client.get("/products")
-    search_after = client.get("/products/search", params={"name": "pot"})
+    search_after = client.get("/products/search", params={"name": search_query})
 
     assert view_one_after.status_code == 404
     assert len(view_all_before.json()) - 1 == len(view_all_after.json())
@@ -174,12 +175,13 @@ def test_delete_should_return_404_if_not_exists(
 
 
 def test_delete_should_keep_product_in_database(
-    client, db_session, valid_product_kwargs, seed_product, first_existing_product
+    client, db_session, seed_product, first_existing_product
 ):
-    response = client.delete(f"/products/{first_existing_product.id}")
-    assert response.status_code == 204
+    get_response = client.get(f"/products/{first_existing_product.id}")
+    delete_response = client.delete(f"/products/{first_existing_product.id}")
+    assert delete_response.status_code == 204
     product = db_session.get(Product, first_existing_product.id)
-    assert product.name == valid_product_kwargs["name"]
+    assert product.name == get_response.json()["name"]
 
 
 def test_update_should_update_product(
