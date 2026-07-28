@@ -83,6 +83,11 @@ def test_get_product_should_return_product(client, db_session, seed_product):
     assert response.json() == product_json
 
 
+def test_get_product_should_return_404_if_not_exists(client, db_session):
+    response = client.get(f"/products/1")
+    assert response.status_code == 404
+
+
 @pytest.mark.parametrize(
     "name, unit, result",
     [
