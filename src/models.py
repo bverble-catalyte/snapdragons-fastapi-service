@@ -47,6 +47,7 @@ class ProductCreate(BaseModel):
     )
 
     model_config = ConfigDict(
+        from_attributes=True,
         json_schema_extra={
             "example": {
                 "name": "Basil Plant - 4in Pot",
@@ -55,7 +56,7 @@ class ProductCreate(BaseModel):
                 "price_per_unit": "4.99",
                 "quantity_in_stock": "40",
             }
-        }
+        },
     )
 
 
