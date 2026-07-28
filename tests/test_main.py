@@ -1,6 +1,8 @@
+from decimal import Decimal
+
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
@@ -130,3 +132,42 @@ def test_db_check_does_not_leak_internals(client, monkeypatch):
 
     assert response.status_code == 500
     assert "10.0.0.2" not in response.json()["detail"]
+
+
+def test_update_should_update_product(client, db_session, seed_product):
+    existing_product = db_session.scalars(select(Product)).first()
+    request_body = ProductCreate.model_validate(existing_product)
+    request_body.name = "12in Blue Ceramic Pot"
+    put_response = client.put(
+        f"/products/{existing_product.id}", json=request_body.model_dump(mode="json")
+    )
+    get_response = client.get(f"/products/{existing_product.id}")
+
+    assert put_response.status_code == 200
+    assert get_response.json()["name"] == request_body.name
+
+
+def test_update_should_return_404_if_not_exists(
+    client, db_session, valid_product_kwargs
+):
+    max_id = db_session.scalar(select(func.max(Product.id))) or 0
+    missing_id = max_id + 1
+
+    request_body = ProductCreate(**(valid_product_kwargs))
+    reponse = client.put(
+        f"/products/{missing_id}", json=request_body.model_dump(mode="json")
+    )
+    assert reponse.status_code == 404
+
+
+def test_update_should_return_422_if_bad_input(
+    client, valid_product_kwargs, db_session, seed_product
+):
+    existing_product = db_session.scalars(select(Product)).first()
+    request_body = ProductCreate.model_validate(existing_product)
+    request_body.cost_per_unit = Decimal("-5.0")
+    response = client.put(
+        f"/products/{existing_product.id}", json=request_body.model_dump(mode="json")
+    )
+
+    assert response.status_code == 422
