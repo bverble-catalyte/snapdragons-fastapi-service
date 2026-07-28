@@ -117,6 +117,7 @@ def create_product(db: DbSession, product: ProductCreate):
     "/products/{id}",
     response_model=ProductRead,
     response_description="The updated product",
+    responses={404: {"description": "A product with that ID does not exist."}},
 )
 def update_product(db: DbSession, product: ProductCreate, id: int) -> ProductRead:
     """Update a product with a given ID."""
@@ -135,6 +136,7 @@ def update_product(db: DbSession, product: ProductCreate, id: int) -> ProductRea
 @app.delete(
     "/products/{id}",
     status_code=status.HTTP_204_NO_CONTENT,
+    responses={404: {"description": "A product with that ID does not exist."}},
 )
 def delete_product(db: DbSession, id: int) -> None:
     """Soft deletes product based on given ID."""
