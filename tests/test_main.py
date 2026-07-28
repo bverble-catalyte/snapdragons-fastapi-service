@@ -220,3 +220,20 @@ def test_update_should_return_422_if_bad_input(
     )
 
     assert response.status_code == 422
+
+
+def test_update_should_not_update_deleted_products(
+    client, db_session, seed_product, first_existing_product
+):
+    request_body = ProductCreate.model_validate(first_existing_product)
+    request_body.name = "12in Blue Ceramic Pot"
+    response = client.delete(f"/products/{first_existing_product.id}")
+    assert response.status_code == 204
+
+    response = client.put(
+        f"/products/{first_existing_product.id}",
+        json=request_body.model_dump(mode="json"),
+    )
+    assert response.status_code == 404
+    product = db_session.get(Product, first_existing_product.id)
+    assert product == first_existing_product
