@@ -1,10 +1,10 @@
 {
   "info": {
-    "_postman_id": "778598c2-04b7-41d2-96f4-b305f63716ca",
+    "_postman_id": "2033a2f7-1b43-4770-a009-14c6105deb9f",
     "name": "Snapdragons",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "56711512",
-    "_collection_link": "https://go.postman.co/collection/56711512-778598c2-04b7-41d2-96f4-b305f63716ca?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/56711512-2033a2f7-1b43-4770-a009-14c6105deb9f?source=collection_link"
   },
   "item": [
     {
@@ -108,7 +108,24 @@
       "name": "Look up Product by ID",
       "request": {
         "method": "GET",
-        "header": []
+        "header": [],
+        "url": {
+          "raw": "localhost:8000/products/:id",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "products",
+            ":id"
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "1"
+            }
+          ]
+        }
       },
       "response": []
     },
@@ -134,8 +151,42 @@
     {
       "name": "Update Product",
       "request": {
-        "method": "GET",
-        "header": []
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"Basil Plant - 2in Pot\",\r\n    \"unit\": \"each\",\r\n    \"cost_per_unit\": \"3.25\",\r\n    \"price_per_unit\": \"5.50\",\r\n    \"quantity_in_stock\": \"30\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8000/products/:id",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "products",
+            ":id"
+          ],
+          "query": [
+            {
+              "key": "",
+              "value": null,
+              "type": "text",
+              "disabled": true
+            }
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "1"
+            }
+          ]
+        }
       },
       "response": []
     },
