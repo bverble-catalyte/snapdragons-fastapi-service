@@ -109,3 +109,22 @@ def create_product(db: DbSession, product: ProductCreate):
     db.add(new_product)
     db.commit()
     return new_product
+
+
+@app.put(
+    "/products/{id}",
+    response_model=ProductRead,
+    response_description="The updated product",
+)
+def update_product(db: DbSession, product: ProductCreate, id: int) -> ProductRead:
+    """Update a product with a given ID."""
+    query = db.query(Product).filter(Product.id == id)
+    update_product = query.first()
+    if update_product is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Product with id{id} not found",
+        )
+    query.update(product.model_dump())
+    db.commit()
+    return update_product
