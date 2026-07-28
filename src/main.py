@@ -105,15 +105,7 @@ def get_product(db: DbSession, id: int) -> Product:
 )
 def create_product(db: DbSession, product: ProductCreate):
     """Create a new product."""
-    stmt = insert(Product).values(
-        name=product.name,
-        unit=product.unit,
-        cost_per_unit=product.cost_per_unit,
-        price_per_unit=product.price_per_unit,
-        quantity_in_stock=product.quantity_in_stock,
-    )
-
-    db.execute(stmt)
+    new_product = Product(**product.model_dump())
+    db.add(new_product)
     db.commit()
-
-    return product
+    return new_product
