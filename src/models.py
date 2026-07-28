@@ -7,45 +7,93 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from database import Base
 
+NAME_TITLE = "Product Name"
+NAME_DESC = "The product name"
+
+UNIT_TITLE = "Unit of Sale"
+UNIT_DESC = 'The product\'s unit of sale (e.g. "each", "bag", "lb")'
+
+COST_TITLE = "Cost Per Unit"
+COST_PER_UNIT_DESC = "Amount the garden center pays suppliers, in dollars per unit"
+
+PRICE_TITLE = "Price Per Unit"
+PRICE_PER_UNIT_DESC = "Amount the garden center charges customers, in dollars per unit"
+
+QUANTITY_TITLE = "Quantity In Stock"
+QUANTITY_IN_STOCK_DESC = "Current amount of product in inventory, in stock units"
+
 
 class ProductCreate(BaseModel):
-    """Represents a product sold by the garden center.
+    """
+    Input schema for creating a new product.
 
-    Attributes:
-        name: The product name
-        unit: The product's unit of sale (e.g. "each", "bag", "lb")
-        cost_per_unit: Amount the garden center pays suppliers, in dollars per unit
-        price_per_unit: Amount the garden center charges customers, in dollars per unit
-        quantity_in_stock: Current amount of product in inventory, in stock units
+    Does not include `id`, since this will be assigned on creation.
     """
 
-    name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)]
-    unit: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)]
-    cost_per_unit: Annotated[Decimal, Field(gt=0, decimal_places=2)]
-    price_per_unit: Annotated[Decimal, Field(gt=0, decimal_places=2)]
-    quantity_in_stock: Annotated[Decimal, Field(ge=0)]
+    name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
+        Field(title=NAME_TITLE, description=NAME_DESC)
+    )
+    unit: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
+        Field(title=UNIT_TITLE, description=UNIT_DESC)
+    )
+    cost_per_unit: Annotated[Decimal, Field(gt=0, decimal_places=2)] = Field(
+        title=COST_TITLE, description=COST_PER_UNIT_DESC
+    )
+    price_per_unit: Annotated[Decimal, Field(gt=0, decimal_places=2)] = Field(
+        title=PRICE_TITLE, description=PRICE_PER_UNIT_DESC
+    )
+    quantity_in_stock: Annotated[Decimal, Field(ge=0)] = Field(
+        title=QUANTITY_TITLE, description=QUANTITY_IN_STOCK_DESC
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "name": "Basil Plant - 4in Pot",
+                "unit": "each",
+                "cost_per_unit": "1.75",
+                "price_per_unit": "4.99",
+                "quantity_in_stock": "40",
+            }
+        }
+    )
 
 
 class ProductRead(BaseModel):
-    """Represents a product sold by the garden center.
+    """Represents a product sold by the garden center."""
 
-    Attributes:
-        id: The unique product identifier
-        name: The product name
-        unit: The product's unit of sale (e.g. "each", "bag", "lb")
-        cost_per_unit: Amount the garden center pays suppliers, in dollars per unit
-        price_per_unit: Amount the garden center charges customers, in dollars per unit
-        quantity_in_stock: Current amount of product in inventory, in stock units
-    """
+    id: PositiveInt = Field(
+        title="Product ID", description="The unique product identifier"
+    )
+    name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
+        Field(title=NAME_TITLE, description=NAME_DESC)
+    )
+    unit: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
+        Field(title=UNIT_TITLE, description=UNIT_DESC)
+    )
+    cost_per_unit: Annotated[Decimal, Field(gt=0, decimal_places=2)] = Field(
+        title=COST_TITLE, description=COST_PER_UNIT_DESC
+    )
+    price_per_unit: Annotated[Decimal, Field(gt=0, decimal_places=2)] = Field(
+        title=UNIT_TITLE, description=PRICE_PER_UNIT_DESC
+    )
+    quantity_in_stock: Annotated[Decimal, Field(ge=0)] = Field(
+        title=QUANTITY_TITLE, description=QUANTITY_IN_STOCK_DESC
+    )
 
-    id: PositiveInt
-    name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)]
-    unit: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)]
-    cost_per_unit: Annotated[Decimal, Field(gt=0, decimal_places=2)]
-    price_per_unit: Annotated[Decimal, Field(gt=0, decimal_places=2)]
-    quantity_in_stock: Annotated[Decimal, Field(ge=0)]
-
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "id": 1,
+                "name": "Basil Plant - 4in Pot",
+                "unit": "each",
+                "cost_per_unit": "1.75",
+                "price_per_unit": "4.99",
+                "quantity_in_stock": "40",
+            }
+        },
+    )
 
 
 class Product(Base):
