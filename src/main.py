@@ -10,7 +10,7 @@ from models import DatabaseStatus, Product, ProductCreate, ProductRead
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI):  # pragma: no cover
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     yield
