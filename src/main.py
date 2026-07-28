@@ -6,7 +6,7 @@ from sqlalchemy import insert
 from sqlalchemy.orm import Session
 
 from database import Base, engine, get_db
-from models import Product, ProductCreate, ProductRead
+from models import DatabaseStatus, Product, ProductCreate, ProductRead
 
 
 @asynccontextmanager
@@ -32,7 +32,7 @@ def normalize(s: str) -> str:
     return "".join(s.lower().split())
 
 
-@app.get("/db-check")
+@app.get("/db-check", response_model=DatabaseStatus)
 def db_check(db: DbSession):
     try:
         # Perform a simple query to verify connection
