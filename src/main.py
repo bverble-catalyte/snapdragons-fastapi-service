@@ -32,6 +32,19 @@ def normalize(s: str) -> str:
     return "".join(s.lower().split())
 
 
+def get_product_by_id(id: int, db: DbSession) -> Product:
+    """Looks up a product by a given ID or raises a 404: Not Found"""
+    product = (
+        db.query(Product).filter(Product.id == id, Product.is_deleted == False).first()
+    )
+    if product is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Product with id {id} not found",
+        )
+    return product
+
+
 @app.get(
     "/db-check",
     response_model=DatabaseStatus,
@@ -86,16 +99,8 @@ def search_products(
     response_description="The product",
     responses={404: {"description": "A product with that ID does not exist."}},
 )
-def get_product(db: DbSession, id: int) -> Product:
+def get_product(product: Product = Depends(get_product_by_id)) -> Product:
     """View a product with a given ID."""
-    product = (
-        db.query(Product).filter(Product.id == id, Product.is_deleted == False).first()
-    )
-    if product is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Product with id {id} not found",
-        )
     return product
 
 
@@ -119,20 +124,17 @@ def create_product(db: DbSession, product: ProductCreate):
     response_description="The updated product",
     responses={404: {"description": "A product with that ID does not exist."}},
 )
-def update_product(db: DbSession, product: ProductCreate, id: int) -> ProductRead:
+def update_product(
+    db: DbSession,
+    product_create: ProductCreate,
+    product: Product = Depends(get_product_by_id),
+) -> Product:
     """Update a product with a given ID."""
-    update_product = (
-        db.query(Product).filter(Product.id == id, Product.is_deleted == False).first()
-    )
-    if update_product is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Product with id {id} not found",
-        )
-    for field, value in product.model_dump().items():
-        setattr(update_product, field, value)
+    for field, value in product_create.model_dump().items():
+        setattr(product, field, value)
     db.commit()
-    return update_product
+    db.refresh(product)
+    return product
 
 
 @app.delete(
@@ -140,16 +142,9 @@ def update_product(db: DbSession, product: ProductCreate, id: int) -> ProductRea
     status_code=status.HTTP_204_NO_CONTENT,
     responses={404: {"description": "A product with that ID does not exist."}},
 )
-def delete_product(db: DbSession, id: int) -> None:
+def delete_product(
+    db: DbSession, product: Product = Depends(get_product_by_id)
+) -> None:
     """Soft deletes product based on given ID."""
-    product = (
-        db.query(Product).filter(Product.id == id, Product.is_deleted == False).first()
-    )
-    if product is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Product with id {id} not found",
-        )
-
     product.is_deleted = True
     db.commit()
