@@ -121,14 +121,16 @@ def create_product(db: DbSession, product: ProductCreate):
 )
 def update_product(db: DbSession, product: ProductCreate, id: int) -> ProductRead:
     """Update a product with a given ID."""
-    query = db.query(Product).filter(Product.id == id)
-    update_product = query.first()
+    update_product = (
+        db.query(Product).filter(Product.id == id, Product.is_deleted == False).first()
+    )
     if update_product is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Product with id {id} not found",
         )
-    query.update(product.model_dump())
+    for field, value in product.model_dump().items():
+        setattr(update_product, field, value)
     db.commit()
     return update_product
 
