@@ -138,6 +138,26 @@
         "header": []
       },
       "response": []
+    },
+    {
+      "name": "Delete Product by ID",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "localhost:8000/products/1",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "products",
+            "1"
+          ]
+        },
+        "description": "Deletes the product with the specified ID from the local API (`DELETE /products/1`). If the product does not exist, the API returns `404 Not Found` with a response body such as `{ \"detail\": \"Product with id 1 not found\" }`."
+      },
+      "response": []
     }
   ]
 }
