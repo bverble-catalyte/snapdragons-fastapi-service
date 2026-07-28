@@ -1,10 +1,10 @@
 {
   "info": {
-    "_postman_id": "778598c2-04b7-41d2-96f4-b305f63716ca",
+    "_postman_id": "24e7958d-c125-446b-a811-50925f16c1b2",
     "name": "Snapdragons",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "56711512",
-    "_collection_link": "https://go.postman.co/collection/56711512-778598c2-04b7-41d2-96f4-b305f63716ca?source=collection_link"
+    "_exporter_id": "56711619",
+    "_collection_link": "https://go.postman.co/collection/56711619-24e7958d-c125-446b-a811-50925f16c1b2?source=collection_link"
   },
   "item": [
     {
@@ -108,7 +108,10 @@
       "name": "Look up Product by ID",
       "request": {
         "method": "GET",
-        "header": []
+        "header": [],
+        "url": {
+          "raw": ""
+        }
       },
       "response": []
     },
@@ -128,6 +131,26 @@
           ]
         },
         "description": "## Database Health Check\n\nVerifies that the application server can successfully connect to the database and retrieves a basic summary of the current data state.\n\n---\n\n### Method & Endpoint\n\n```\nGET localhost:8000/db-check\n\n ```\n\n---\n\n### Response\n\n**Example Response Body:**\n\n``` json\n{\n  \"status\": \"connected\",\n  \"product_count\": 0\n}\n\n ```\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `status` | `string` | Indicates the current state of the database connection. A value of `\"connected\"` confirms the database is reachable and operational. |\n| `product_count` | `number` | The total number of product records currently stored in the database. Useful for a quick sanity check on data availability. |"
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Product by ID",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "localhost:8000/products/1",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "products",
+            "1"
+          ]
+        },
+        "description": "Deletes the product with the specified ID from the local API (`DELETE /products/1`). If the product does not exist, the API returns `404 Not Found` with a response body such as `{ \"detail\": \"Product with id 1 not found\" }`."
       },
       "response": []
     }

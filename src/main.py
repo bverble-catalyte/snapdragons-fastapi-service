@@ -57,7 +57,7 @@ def db_check(db: DbSession):
 )
 def view_products(db: DbSession):
     """View all products in the database."""
-    products = db.query(Product).all()
+    products = db.query(Product).filter(Product.is_deleted == False)
     return products
 
 
@@ -72,7 +72,7 @@ def search_products(
     unit: Annotated[str | None, Query(description="Optional product unit.")] = None,
 ):
     """Search the database for products with matching name and unit."""
-    query = db.query(Product)
+    query = db.query(Product).filter(Product.is_deleted == False)
     if unit is not None:
         query = query.filter(Product.unit == unit)
 
@@ -88,7 +88,9 @@ def search_products(
 )
 def get_product(db: DbSession, id: int) -> Product:
     """View a product with a given ID."""
-    product = db.get(Product, id)
+    product = (
+        db.query(Product).filter(Product.id == id, Product.is_deleted == False).first()
+    )
     if product is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -128,3 +130,22 @@ def update_product(db: DbSession, product: ProductCreate, id: int) -> ProductRea
     query.update(product.model_dump())
     db.commit()
     return update_product
+
+
+@app.delete(
+    "/products/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_product(db: DbSession, id: int) -> None:
+    """Soft deletes product based on given ID."""
+    product = (
+        db.query(Product).filter(Product.id == id, Product.is_deleted == False).first()
+    )
+    if product is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Product with id {id} not found",
+        )
+
+    product.is_deleted = True
+    db.commit()

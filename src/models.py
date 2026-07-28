@@ -2,7 +2,7 @@ from decimal import Decimal
 from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, StringConstraints
-from sqlalchemy import Identity, Integer, Numeric
+from sqlalchemy import Boolean, Identity, Integer, Numeric
 from sqlalchemy.orm import Mapped, mapped_column
 
 from database import Base
@@ -111,6 +111,7 @@ class Product(Base):
     quantity_in_stock: Mapped[Decimal] = mapped_column(
         Numeric(precision=10, scale=2), nullable=False
     )
+    is_deleted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
 
 class DatabaseStatus(BaseModel):
