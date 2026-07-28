@@ -43,6 +43,17 @@ def invalid_product_kwargs():
     }
 
 
+@pytest.fixture
+def first_existing_product(db_session, seed_product):
+    return db_session.scalars(select(Product)).first()
+
+
+@pytest.fixture()
+def missing_product_id(db_session, seed_product):
+    max_id = db_session.scalar(select(func.max(Product.id))) or 0
+    return max_id + 1
+
+
 def test_create_product(client, basil_plant_kwargs):
     response = client.post("/products", json=basil_plant_kwargs)
     assert response.status_code == 201
@@ -134,40 +145,76 @@ def test_db_check_does_not_leak_internals(client, monkeypatch):
     assert "10.0.0.2" not in response.json()["detail"]
 
 
-def test_update_should_update_product(client, db_session, seed_product):
-    existing_product = db_session.scalars(select(Product)).first()
-    request_body = ProductCreate.model_validate(existing_product)
+def test_delete_should_remove_product_from_all_endpoint_responses(
+    client, db_session, seed_product, first_existing_product
+):
+    eid = first_existing_product.id
+
+    view_one_before = client.get(f"/products/{eid}")
+    view_all_before = client.get("/products")
+    search_before = client.get("/products/search", params={"name": "pot"})
+
+    response = client.delete(f"/products/{eid}")
+    assert response.status_code == 204
+
+    view_one_after = client.get(f"/products/{eid}")
+    view_all_after = client.get("/products")
+    search_after = client.get("/products/search", params={"name": "pot"})
+
+    assert view_one_after.status_code == 404
+    assert len(view_all_before.json()) - 1 == len(view_all_after.json())
+    assert len(search_before.json()) - 1 == len(search_after.json())
+
+
+def test_delete_should_return_404_if_not_exists(
+    client, db_session, seed_product, missing_product_id
+):
+    response = client.delete(f"/products/{missing_product_id}")
+    assert response.status_code == 404
+
+
+def test_delete_should_keep_product_in_database(
+    client, db_session, valid_product_kwargs, seed_product, first_existing_product
+):
+    response = client.delete(f"/products/{first_existing_product.id}")
+    assert response.status_code == 204
+    product = db_session.get(Product, first_existing_product.id)
+    assert product.name == valid_product_kwargs["name"]
+
+
+def test_update_should_update_product(
+    client, db_session, seed_product, first_existing_product
+):
+    request_body = ProductCreate.model_validate(first_existing_product)
     request_body.name = "12in Blue Ceramic Pot"
     put_response = client.put(
-        f"/products/{existing_product.id}", json=request_body.model_dump(mode="json")
+        f"/products/{first_existing_product.id}",
+        json=request_body.model_dump(mode="json"),
     )
-    get_response = client.get(f"/products/{existing_product.id}")
+    get_response = client.get(f"/products/{first_existing_product.id}")
 
     assert put_response.status_code == 200
     assert get_response.json()["name"] == request_body.name
 
 
 def test_update_should_return_404_if_not_exists(
-    client, db_session, valid_product_kwargs
+    client, db_session, valid_product_kwargs, missing_product_id
 ):
-    max_id = db_session.scalar(select(func.max(Product.id))) or 0
-    missing_id = max_id + 1
-
     request_body = ProductCreate(**(valid_product_kwargs))
-    reponse = client.put(
-        f"/products/{missing_id}", json=request_body.model_dump(mode="json")
+    response = client.put(
+        f"/products/{missing_product_id}", json=request_body.model_dump(mode="json")
     )
-    assert reponse.status_code == 404
+    assert response.status_code == 404
 
 
 def test_update_should_return_422_if_bad_input(
-    client, valid_product_kwargs, db_session, seed_product
+    client, valid_product_kwargs, db_session, seed_product, first_existing_product
 ):
-    existing_product = db_session.scalars(select(Product)).first()
-    request_body = ProductCreate.model_validate(existing_product)
+    request_body = ProductCreate.model_validate(first_existing_product)
     request_body.cost_per_unit = Decimal("-5.0")
     response = client.put(
-        f"/products/{existing_product.id}", json=request_body.model_dump(mode="json")
+        f"/products/{first_existing_product.id}",
+        json=request_body.model_dump(mode="json"),
     )
 
     assert response.status_code == 422
