@@ -65,95 +65,235 @@ This project contains a `postman.json` file which can be imported into Postman t
 
 | Method | Path | Description |
 | --- | --- | --- |
-| `GET` | `/products` | List products
-| `GET` | `/products/{id}` | View product
-| `GET` | `/products/search` | Search products by name or stock keeping unit
-| `POST` | `/products` | Create product
+| `GET` | `/db-check` | [Database Check](#get-db-check)
+| `GET` | `/products` | [View Products](#get-products)
+| `POST` | `/products` | [Create Product](#post-products)
+| `GET` | `/products/{id}` | [View Product](#get-productsid)
+| `PUT` | `/products/{id}` | [Update Product](#put-productsid)
+| `DELETE` | `/products/{id}` | [Delete Product](#delete-productsid)
+| `GET` | `/products/search` | [Search Products](#get-productssearch)
 
-### `GET /products`
+### `GET` /db-check
 
-List all products.
+**Database Check**
 
-#### Response Body (JSON)
+Check the status of the database connection.
 
-Returns an array of `Product` objects.
+**Responses**
 
-#### Response Codes:
+| Status | Description | Body |
+| --- | --- | --- |
+| `200` | The connection status | `application/json` [`DatabaseStatus`](#databasestatus) |
 
-- **200 OK:** On success
+[Back to Summary](#summary)
 
-### `GET /products/{id}`
+---
 
-View product with identifier `id`.
+### `GET` /products
 
-#### Response Body (JSON)
+**View Products**
 
-Returns a `Product` object.
+View all products in the database.
 
-#### Response Codes:
+**Responses**
 
-- **200 OK:** On success
-- **404 Not Found:** If no such product exists
+| Status | Description | Body |
+| --- | --- | --- |
+| `200` | The list of products | `application/json` array[[`ProductRead`](#productread)] |
 
-### `GET /products/search`
+[Back to Summary](#summary)
 
-Search for products by name or stock keeping unit.
+---
 
-#### Query Params
+### `POST` /products
 
-| Field | Type | Required | Description |
+**Create Product**
+
+Create a new product.
+
+**Request body** (required)
+
+`application/json` — [`ProductCreate`](#productcreate)
+
+| Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `name` | string | yes | Search for products by name |
-| `unit` | string | no | Search for products inventoried by stock keeping unit |
+| `name` | string | yes | The product name, min length `1` |
+| `unit` | string | yes | The product's unit of sale (e.g. "each", "bag", "lb"), min length `1` |
+| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |
+| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |
+| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |
 
-#### Response Body (JSON)
+**Responses**
 
-Returns an array of `Product` objects.
+| Status | Description | Body |
+| --- | --- | --- |
+| `201` | The newly created product | `application/json` [`ProductRead`](#productread) |
+| `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
 
-#### Response Codes:
+[Back to Summary](#summary)
 
-- **200 OK:** On success
-- **422 Unprocessable Content:** If any required fields are missing or invalid
+---
 
-### `POST /products`
+### `GET` /products/{id}
 
-Create a product.
+**View Product**
 
-#### Request Body (JSON)
+View a product with a given ID.
 
-A `ProductCreate` object.
+**Parameters**
 
-#### Response Body (JSON)
+| Name | In | Type | Required | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | path | int | yes |  |
 
-Returns the created `Product` object.
+**Responses**
 
-#### Response Codes:
+| Status | Description | Body |
+| --- | --- | --- |
+| `200` | The product | `application/json` [`ProductRead`](#productread) |
+| `404` | A product with that ID does not exist. | — |
+| `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
 
-- **201 Created:** On success
-- **422 Unprocessable Content:** If any required fields are missing or invalid
+[Back to Summary](#summary)
 
-### JSON Schemas
+---
 
-#### Product
+### `PUT` /products/{id}
 
-| Field | Type | Required | Description |
+**Update Product**
+
+Update a product with a given ID.
+
+**Parameters**
+
+| Name | In | Type | Required | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | path | int | yes |  |
+
+**Request body** (required)
+
+`application/json` — [`ProductCreate`](#productcreate)
+
+| Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `id` | int | yes | The product's unique identifier |
-| `name` | string | yes | The product name |
-| `unit` | string | yes | The product's unit of sale (e.g. "each", "bag", "lb") |
-| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit |
-| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit |
-| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units |
+| `name` | string | yes | The product name, min length `1` |
+| `unit` | string | yes | The product's unit of sale (e.g. "each", "bag", "lb"), min length `1` |
+| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |
+| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |
+| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |
 
-#### ProductCreate
+**Responses**
 
-| Field | Type | Required | Description |
+| Status | Description | Body |
+| --- | --- | --- |
+| `200` | The updated product | `application/json` [`ProductRead`](#productread) |
+| `404` | A product with that ID does not exist. | — |
+| `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
+
+[Back to Summary](#summary)
+
+---
+
+### `DELETE` /products/{id}
+
+**Delete Product**
+
+Delete a product with a given ID.
+
+**Parameters**
+
+| Name | In | Type | Required | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | path | int | yes |  |
+
+**Responses**
+
+| Status | Description | Body |
+| --- | --- | --- |
+| `204` | The product was deleted successfully. | — |
+| `404` | A product with that ID does not exist. | — |
+| `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
+
+[Back to Summary](#summary)
+
+---
+
+### `GET` /products/search
+
+**Search Products**
+
+Search the database for products with matching name and unit.
+
+The name search will be performed on a normalized product name (lowercased and with whitespace stripped). In other words, `"3in"` will match against a product named `"3 In. Planter"`.
+
+**Parameters**
+
+| Name | In | Type | Required | Notes |
+| --- | --- | --- | --- | --- |
+| `name` | query | string | yes | |
+| `unit` | query | string | no | |
+
+**Responses**
+
+| Status | Description | Body |
+| --- | --- | --- |
+| `200` | The list of products with matching name and unit | `application/json` array[[`ProductRead`](#productread)] |
+| `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
+
+[Back to Summary](#summary)
+
+---
+
+## Schemas
+
+### DatabaseStatus
+
+| Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `name` | string | yes | The product name |
-| `unit` | string | yes | The product's unit of sale (e.g. "each", "bag", "lb") |
-| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit |
-| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit |
-| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units |
+| `status` | string | yes | Database connection status |
+| `product_count` | int | yes | The number of rows in the product table |
+
+### HTTPValidationError
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `detail` | array[[`ValidationError`](#validationerror)] | no |  |
+
+
+### ProductCreate
+
+Input schema for creating a new product. Does not include `id`, since this will be assigned on creation.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `name` | string | yes | The product name, min length `1` |
+| `unit` | string | yes | The product's unit of sale (e.g. "each", "bag", "lb"), min length `1` |
+| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |
+| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |
+| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |
+
+### ProductRead
+
+Represents a product sold by the garden center.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `id` | int | yes | The unique product identifier, min (exclusive) `0` |
+| `name` | string | yes | The product name, min length `1` |
+| `unit` | string | yes | The product's unit of sale (e.g. "each", "bag", "lb"), min length `1` |
+| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |
+| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |
+| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |
+
+### ValidationError
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `loc` | array[string \| int] | yes |  |
+| `msg` | string | yes |  |
+| `type` | string | yes |  |
+| `input` | any | no |  |
+| `ctx` | object | no |  |
 
 ## Postgres Dependencies Installation:
 
