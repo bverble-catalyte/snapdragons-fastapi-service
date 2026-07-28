@@ -32,8 +32,13 @@ def normalize(s: str) -> str:
     return "".join(s.lower().split())
 
 
-@app.get("/db-check", response_model=DatabaseStatus)
+@app.get(
+    "/db-check",
+    response_model=DatabaseStatus,
+    response_description="The connection status",
+)
 def db_check(db: DbSession):
+    """Check the status of the database connection."""
     try:
         # Perform a simple query to verify connection
         count = db.query(Product).count()
@@ -45,36 +50,28 @@ def db_check(db: DbSession):
         )
 
 
-@app.get("/products", response_model=List[ProductRead])
+@app.get(
+    "/products",
+    response_model=List[ProductRead],
+    response_description="The list of products",
+)
 def view_products(db: DbSession):
-    """Views all products within the database.
-
-    Args:
-        db (Session): The database session.
-
-    Returns:
-        A list of products in the database.
-    """
+    """View all products in the database."""
     products = db.query(Product).all()
     return products
 
 
-@app.get("/products/search", response_model=List[ProductRead])
+@app.get(
+    "/products/search",
+    response_model=List[ProductRead],
+    response_description="The list of products with matching name and unit",
+)
 def search_products(
     db: DbSession,
     name: Annotated[str, Query(description="The product name is required.")],
     unit: Annotated[str | None, Query(description="Optional product unit.")] = None,
 ):
-    """Searches the database for products with matching name and unit.
-
-    Args:
-        name (str): The product name.
-        unit (str): The product's unit of sale; optional.
-        db (Session): The database session.
-
-    Returns:
-        A list of products with a matching name and unit.
-    """
+    """Search the database for products with matching name and unit."""
     query = db.query(Product)
     if unit is not None:
         query = query.filter(Product.unit == unit)
@@ -83,8 +80,14 @@ def search_products(
     return [p for p in query.all() if normalized_name in normalize(p.name)]
 
 
-@app.get("/products/{id}", response_model=ProductRead)
+@app.get(
+    "/products/{id}",
+    response_model=ProductRead,
+    response_description="The product",
+    responses={404: {"description": "A product with that ID does not exist."}},
+)
 def get_product(db: DbSession, id: int) -> Product:
+    """View a product with a given ID."""
     product = db.get(Product, id)
     if product is None:
         raise HTTPException(
@@ -95,17 +98,13 @@ def get_product(db: DbSession, id: int) -> Product:
 
 
 @app.post(
-    "/products", status_code=status.HTTP_201_CREATED, response_model=ProductCreate
+    "/products",
+    status_code=status.HTTP_201_CREATED,
+    response_model=ProductRead,
+    response_description="The newly created product",
 )
 def create_product(db: DbSession, product: ProductCreate):
-    """Handles POST requests for /products endpoint and appends product for in-memory storage.
-
-    Args:
-        product (Product): A valid product.
-
-    Returns:
-        Status Code - 201 Created with sent data.
-    """
+    """Create a new product."""
     stmt = insert(Product).values(
         name=product.name,
         unit=product.unit,
