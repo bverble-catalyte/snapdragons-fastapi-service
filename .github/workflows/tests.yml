@@ -40,3 +40,14 @@ jobs:
 
       - name: Run pytest
         run: pytest
+
+      - name: Slack notification
+        if: always()
+        uses: slackapi/slack-github-action@v4
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "Workflow *${{ github.workflow }}* on `${{ github.ref_name }}` finished with status: ${{ job.status }}"
+            }
