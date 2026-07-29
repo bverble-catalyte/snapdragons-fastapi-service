@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, StringConstraints
 from sqlalchemy import Boolean, Identity, Integer, Numeric
@@ -129,3 +129,31 @@ class DatabaseStatus(BaseModel):
             }
         }
     )
+
+
+class UserCredentials(BaseModel):
+    username: Annotated[str, StringConstraints(min_length=1)] = Field(
+        title="Username", description="The username used for login"
+    )
+    password: Annotated[str, StringConstraints(min_length=1)] = Field(
+        title="Password", description="The password used for login"
+    )
+
+
+class TokenRead(BaseModel):
+    access_token: str = Field(
+        title="Access Token", description="The JWT for API access"
+    )
+    token_type: Literal["bearer"] = Field(
+        title="Token Type", description='The token type (always "bearer")'
+    )
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(Integer, Identity(always=True), primary_key=True)
+    username: Mapped[str] = mapped_column(nullable=False)
+    password_hash: Mapped[str] = mapped_column(nullable=False)
+
+    model_config = ConfigDict(from_attributes=True)
