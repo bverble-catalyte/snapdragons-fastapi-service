@@ -75,7 +75,7 @@ def test_create_product_with_invalid_payload_returns_422(
     assert response.status_code == 422
 
 
-def test_view_products(client, basil_plant_kwargs, seed_product, db_session):
+def test_view_products_all(client, basil_plant_kwargs, seed_product, db_session):
     products = db_session.query(Product).all()
 
     response = client.get("/products")
@@ -86,6 +86,28 @@ def test_view_products(client, basil_plant_kwargs, seed_product, db_session):
         for p in products
     ]
     assert response.json() == expected
+
+
+@pytest.mark.parametrize(
+    "name, unit, result",
+    [
+        (None, None, 1),
+        ("pot", None, 1),
+        ("basil", None, 0),
+        ("pot", "each", 1),
+        ("pot", "bag", 0),
+    ],
+)
+def test_view_products_search(name, unit, result, client, db_session, seed_product):
+    params = {}
+    if name:
+        params["name"] = name
+    if unit:
+        params["unit"] = unit
+
+    response = client.get("/products", params=params)
+    assert len(response.json()) == result
+    assert response.status_code == 200
 
 
 def test_get_product_should_return_product(client, db_session, seed_product):
@@ -99,29 +121,6 @@ def test_get_product_should_return_product(client, db_session, seed_product):
 def test_get_product_should_return_404_if_not_exists(client, db_session):
     response = client.get(f"/products/1")
     assert response.status_code == 404
-
-
-@pytest.mark.parametrize(
-    "name, unit, result",
-    [
-        ("pot", None, 1),
-        ("basil", None, 0),
-        ("pot", "each", 1),
-        ("pot", "bag", 0),
-    ],
-)
-def test_search_products_should_return_products(
-    name, unit, result, client, db_session, seed_product
-):
-    params = {}
-    if name:
-        params["name"] = name
-    if unit:
-        params["unit"] = unit
-
-    response = client.get("/products/search", params=params)
-    assert len(response.json()) == result
-    assert response.status_code == 200
 
 
 def test_db_check_returns_success(client, seed_product):
@@ -153,14 +152,14 @@ def test_delete_should_remove_product_from_all_endpoint_responses(
     view_one_before = client.get(f"/products/{eid}")
     search_query = view_one_before.json()["name"][:3]
     view_all_before = client.get("/products")
-    search_before = client.get("/products/search", params={"name": search_query})
+    search_before = client.get("/products", params={"name": search_query})
 
     response = client.delete(f"/products/{eid}")
     assert response.status_code == 204
 
     view_one_after = client.get(f"/products/{eid}")
     view_all_after = client.get("/products")
-    search_after = client.get("/products/search", params={"name": search_query})
+    search_after = client.get("/products", params={"name": search_query})
 
     assert view_one_after.status_code == 404
     assert len(view_all_before.json()) - 1 == len(view_all_after.json())

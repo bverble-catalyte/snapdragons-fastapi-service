@@ -1,12 +1,68 @@
 {
   "info": {
-    "_postman_id": "2033a2f7-1b43-4770-a009-14c6105deb9f",
+    "_postman_id": "ca16df45-a247-43a8-a901-66a1fc26ff24",
     "name": "Snapdragons",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "56711512",
-    "_collection_link": "https://go.postman.co/collection/56711512-2033a2f7-1b43-4770-a009-14c6105deb9f?source=collection_link"
+    "_exporter_id": "56711438",
+    "_collection_link": "https://go.postman.co/collection/56711438-ca16df45-a247-43a8-a901-66a1fc26ff24?source=collection_link"
   },
   "item": [
+    {
+      "name": "Database Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8000/db-check",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "db-check"
+          ]
+        },
+        "description": "## Database Health Check\n\nVerifies that the application server can successfully connect to the database and retrieves a basic summary of the current data state.\n\n---\n\n### Method & Endpoint\n\n```\nGET localhost:8000/db-check\n\n ```\n\n---\n\n### Response\n\n**Example Response Body:**\n\n``` json\n{\n  \"status\": \"connected\",\n  \"product_count\": 0\n}\n\n ```\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `status` | `string` | Indicates the current state of the database connection. A value of `\"connected\"` confirms the database is reachable and operational. |\n| `product_count` | `number` | The total number of product records currently stored in the database. Useful for a quick sanity check on data availability. |"
+      },
+      "response": []
+    },
+    {
+      "name": "View Products",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:8000/products",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "products"
+          ],
+          "query": [
+            {
+              "key": "name",
+              "value": "fertilizer",
+              "disabled": true
+            },
+            {
+              "key": "unit",
+              "value": "each",
+              "disabled": true
+            },
+            {
+              "key": "name",
+              "value": "basil",
+              "type": "text",
+              "disabled": true
+            }
+          ]
+        },
+        "description": "Retrieves a list of all products in the inventory. Each product includes the following fields:\n\n- **name** – The product name (e.g., `Basil Plant - 4in Pot`)\n- **unit** – The unit of measurement (e.g., `each`)\n- **cost_per_unit** – The cost price per unit (e.g., `1.75`)\n- **price_per_unit** – The retail price per unit (e.g., `4.99`)\n- **quantity_in_stock** – The current stock quantity (e.g., `40`)\n\n**Method:** GET  \n**URL:** `localhost:8000/products`  \n**Response:** Returns a JSON array of product objects."
+      },
+      "response": []
+    },
     {
       "name": "Create Product",
       "request": {
@@ -36,76 +92,7 @@
       "response": []
     },
     {
-      "name": "Get All Products",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "localhost:8000/products",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000",
-          "path": [
-            "products"
-          ]
-        },
-        "description": "Retrieves a list of all products in the inventory. Each product includes the following fields:\n\n- **name** – The product name (e.g., `Basil Plant - 4in Pot`)\n- **unit** – The unit of measurement (e.g., `each`)\n- **cost_per_unit** – The cost price per unit (e.g., `1.75`)\n- **price_per_unit** – The retail price per unit (e.g., `4.99`)\n- **quantity_in_stock** – The current stock quantity (e.g., `40`)\n\n**Method:** GET  \n**URL:** `localhost:8000/products`  \n**Response:** Returns a JSON array of product objects."
-      },
-      "response": []
-    },
-    {
-      "name": "Search Products",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "localhost:8000/products/search",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000",
-          "path": [
-            "products",
-            "search"
-          ],
-          "query": [
-            {
-              "key": "name",
-              "value": "basil",
-              "disabled": true
-            },
-            {
-              "key": "name",
-              "value": "basilplant",
-              "type": "text",
-              "disabled": true
-            },
-            {
-              "key": "name",
-              "value": "BasilPlant",
-              "type": "text",
-              "disabled": true
-            },
-            {
-              "key": "name",
-              "value": "4in",
-              "type": "text",
-              "disabled": true
-            },
-            {
-              "key": "unit",
-              "value": "each",
-              "type": "text",
-              "disabled": true
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Look up Product by ID",
+      "name": "View Product",
       "request": {
         "method": "GET",
         "header": [],
@@ -126,25 +113,6 @@
             }
           ]
         }
-      },
-      "response": []
-    },
-    {
-      "name": "Database Health Check",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "localhost:8000/db-check",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000",
-          "path": [
-            "db-check"
-          ]
-        },
-        "description": "## Database Health Check\n\nVerifies that the application server can successfully connect to the database and retrieves a basic summary of the current data state.\n\n---\n\n### Method & Endpoint\n\n```\nGET localhost:8000/db-check\n\n ```\n\n---\n\n### Response\n\n**Example Response Body:**\n\n``` json\n{\n  \"status\": \"connected\",\n  \"product_count\": 0\n}\n\n ```\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `status` | `string` | Indicates the current state of the database connection. A value of `\"connected\"` confirms the database is reachable and operational. |\n| `product_count` | `number` | The total number of product records currently stored in the database. Useful for a quick sanity check on data availability. |"
       },
       "response": []
     },
@@ -191,7 +159,7 @@
       "response": []
     },
     {
-      "name": "Delete Product by ID",
+      "name": "Delete Product",
       "request": {
         "method": "DELETE",
         "header": [],

@@ -2,7 +2,6 @@ from contextlib import asynccontextmanager
 from typing import Annotated, List
 
 from fastapi import Depends, FastAPI, HTTPException, Query, status
-from sqlalchemy import insert
 from sqlalchemy.orm import Session
 
 from database import Base, engine, get_db
@@ -68,29 +67,25 @@ def db_check(db: DbSession):
     response_model=List[ProductRead],
     response_description="The list of products",
 )
-def view_products(db: DbSession):
-    """View all products in the database."""
-    products = db.query(Product).filter(Product.is_deleted == False)
-    return products
-
-
-@app.get(
-    "/products/search",
-    response_model=List[ProductRead],
-    response_description="The list of products with matching name and unit",
-)
-def search_products(
+def view_products(
     db: DbSession,
-    name: Annotated[str, Query(description="The product name is required.")],
-    unit: Annotated[str | None, Query(description="Optional product unit.")] = None,
+    name: Annotated[
+        str | None, Query(description="Name search query, partial match")
+    ] = None,
+    unit: Annotated[
+        str | None, Query(description="Unit search query, exact match")
+    ] = None,
 ):
-    """Search the database for products with matching name and unit."""
-    query = db.query(Product).filter(Product.is_deleted == False)
+    """View all products in the database, optionally filtered by name and/or unit of sale."""
+    products_query = db.query(Product).filter(Product.is_deleted == False)
     if unit is not None:
-        query = query.filter(Product.unit == unit)
+        products_query = products_query.filter(Product.unit == unit)
 
-    normalized_name = normalize(name)
-    return [p for p in query.all() if normalized_name in normalize(p.name)]
+    if name is not None:
+        normalized_name = normalize(name)
+        return [p for p in products_query.all() if normalized_name in normalize(p.name)]
+    else:
+        return products_query.all()
 
 
 @app.get(

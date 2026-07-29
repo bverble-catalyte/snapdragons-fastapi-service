@@ -71,7 +71,6 @@ This project contains a `postman.json` file which can be imported into Postman t
 | `GET` | `/products/{id}` | [View Product](#get-productsid)
 | `PUT` | `/products/{id}` | [Update Product](#put-productsid)
 | `DELETE` | `/products/{id}` | [Delete Product](#delete-productsid)
-| `GET` | `/products/search` | [Search Products](#get-productssearch)
 
 ### `GET` /db-check
 
@@ -93,7 +92,16 @@ Check the status of the database connection.
 
 **View Products**
 
-View all products in the database.
+View all products in the database, optionally filtered by name and/or unit of sale.
+
+The name search will be performed on a normalized product name (lowercased and with whitespace stripped). In other words, `"3in"` will match against a product named `"3 In. Planter"`.
+
+**Parameters**
+
+| Name | In | Type | Required | Notes |
+| --- | --- | --- | --- | --- |
+| `name` | query | string | no | |
+| `unit` | query | string | no | |
 
 **Responses**
 
@@ -212,32 +220,6 @@ Delete a product with a given ID.
 | --- | --- | --- |
 | `204` | The product was deleted successfully. | — |
 | `404` | A product with that ID does not exist. | — |
-| `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
-
-[Back to Summary](#summary)
-
----
-
-### `GET` /products/search
-
-**Search Products**
-
-Search the database for products with matching name and unit.
-
-The name search will be performed on a normalized product name (lowercased and with whitespace stripped). In other words, `"3in"` will match against a product named `"3 In. Planter"`.
-
-**Parameters**
-
-| Name | In | Type | Required | Notes |
-| --- | --- | --- | --- | --- |
-| `name` | query | string | yes | |
-| `unit` | query | string | no | |
-
-**Responses**
-
-| Status | Description | Body |
-| --- | --- | --- |
-| `200` | The list of products with matching name and unit | `application/json` array[[`ProductRead`](#productread)] |
 | `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
 
 [Back to Summary](#summary)
