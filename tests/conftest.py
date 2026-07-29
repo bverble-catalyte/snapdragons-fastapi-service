@@ -3,11 +3,13 @@ import subprocess
 from decimal import Decimal
 
 import pytest
-from sqlalchemy import create_engine, event
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine, event, func, select
 from sqlalchemy.orm import sessionmaker
 
 from config import settings
-from models import Base, Product
+from main import app, get_current_user, get_db
+from models import Base, Product, User, UserCredentials
 
 
 def create_test_database(db_name: str) -> None:
@@ -76,8 +78,83 @@ def valid_product_kwargs():
     }
 
 
+@pytest.fixture
+def invalid_product_kwargs():
+    return {
+        "name": "Happy Plant Fertilizer",
+        "unit": "bag",
+        "cost_per_unit": "15.50",
+        "price_per_unit": "20.99",
+        "quantity_in_stock": "-5",
+    }
+
+
 @pytest.fixture()
 def seed_product(db_session, valid_product_kwargs):
     product = Product(**valid_product_kwargs)
     db_session.add(product)
     db_session.commit()
+
+
+@pytest.fixture
+def first_existing_product(db_session, seed_product):
+    return db_session.scalars(select(Product)).first()
+
+
+@pytest.fixture()
+def unused_product_id(db_session, seed_product):
+    max_id = db_session.scalar(select(func.max(Product.id))) or 0
+    return max_id + 1
+
+
+@pytest.fixture
+def manager_valid_credentials():
+    return UserCredentials(
+        **{
+            "username": "manager",
+            "password": "admin",
+        }
+    )
+
+
+@pytest.fixture
+def manager_invalid_credentials():
+    return UserCredentials(
+        **{
+            "username": "manager",
+            "password": "incorrect",
+        }
+    )
+
+
+@pytest.fixture
+def manager_user():
+    return User(
+        username="manager",
+        # generate an example password hash in Python:
+        #   from pwdlib import PasswordHash
+        #   PasswordHash.recommended().hash("password")
+        # password == "admin"
+        password_hash="$argon2id$v=19$m=65536,t=3,p=4$cZwzIBCPEaSFju3XYSXT2Q$Tt3jLTrMTyb+hafu05PHSv2eZbv3YYh5kzmkrlDktR8",
+    )
+
+
+@pytest.fixture()
+def seed_users(db_session, manager_user):
+    user = manager_user
+    db_session.add(user)
+    db_session.commit()
+
+
+@pytest.fixture()
+def unauthenticated_client(db_session):
+    app.dependency_overrides[get_db] = lambda: db_session
+    yield TestClient(app)
+    del app.dependency_overrides[get_db]
+
+
+@pytest.fixture
+def authenticated_client(unauthenticated_client, manager_user, seed_users):
+    app.dependency_overrides[get_current_user] = lambda: manager_user
+    yield unauthenticated_client
+    del app.dependency_overrides[get_current_user]
