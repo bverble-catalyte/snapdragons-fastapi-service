@@ -1,9 +1,21 @@
+import os
 from collections.abc import Generator
 
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
-DATABASE_URL = "postgresql://root:root@127.0.0.1:5432/gardendb"
+load_dotenv()
+
+
+def get_required_env(name: str) -> str:
+    value = os.getenv(name)
+    if value is None:
+        raise RuntimeError(f"{name} environment variable is not set")
+    return value
+
+
+DATABASE_URL = get_required_env("DATABASE_URL")
 
 engine = create_engine(DATABASE_URL, echo=True, future=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

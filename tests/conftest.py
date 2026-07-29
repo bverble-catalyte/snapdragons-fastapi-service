@@ -3,30 +3,34 @@ import subprocess
 from decimal import Decimal
 
 import pytest
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 
+from database import get_required_env
 from models import Base, Product
 
-TEST_DB_NAME = "gardentest"
-DATABASE_URL = f"postgresql://root:root@localhost/{TEST_DB_NAME}"
+load_dotenv()
+
+TEST_DB_NAME = get_required_env("TEST_DB_NAME")
+DATABASE_URL = get_required_env("TEST_DATABASE_URL")
 
 
-def create_test_database():
+def create_test_database(db_name: str) -> None:
     env = os.environ.copy()
     env["PGPASSWORD"] = "root"
     subprocess.run(
-        ["createdb", "-U", "root", "-h", "localhost", "-p", "5432", TEST_DB_NAME],
+        ["createdb", "-U", "root", "-h", "localhost", "-p", "5432", db_name],
         env=env,
         check=True,
     )
 
 
-def destroy_test_database():
+def destroy_test_database(db_name: str) -> None:
     env = os.environ.copy()
     env["PGPASSWORD"] = "root"
     subprocess.run(
-        ["dropdb", "-U", "root", "-h", "localhost", "-p", "5432", TEST_DB_NAME],
+        ["dropdb", "-U", "root", "-h", "localhost", "-p", "5432", db_name],
         env=env,
         check=True,
     )
@@ -34,8 +38,8 @@ def destroy_test_database():
 
 @pytest.fixture(scope="session")
 def db_engine(request):
-    create_test_database()
-    request.addfinalizer(destroy_test_database)
+    create_test_database(TEST_DB_NAME)
+    request.addfinalizer(lambda: destroy_test_database(TEST_DB_NAME))
 
     engine = create_engine(DATABASE_URL)
     Base.metadata.create_all(bind=engine)
