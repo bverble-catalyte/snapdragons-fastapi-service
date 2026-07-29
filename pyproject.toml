@@ -18,6 +18,10 @@ testpaths = ["tests"]
 pythonpath = ["src"]
 
 [tool.coverage.run]
+branch = true
 omit = [
     "*/tests/*",
 ]
+
+[tool.coverage.report]
+show_missing = true
