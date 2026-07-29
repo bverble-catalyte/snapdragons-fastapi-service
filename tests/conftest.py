@@ -3,17 +3,11 @@ import subprocess
 from decimal import Decimal
 
 import pytest
-from dotenv import load_dotenv
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 
-from database import get_required_env
+from config import settings
 from models import Base, Product
-
-load_dotenv()
-
-TEST_DB_NAME = get_required_env("TEST_DB_NAME")
-DATABASE_URL = get_required_env("TEST_DATABASE_URL")
 
 
 def create_test_database(db_name: str) -> None:
@@ -38,10 +32,12 @@ def destroy_test_database(db_name: str) -> None:
 
 @pytest.fixture(scope="session")
 def db_engine(request):
-    create_test_database(TEST_DB_NAME)
-    request.addfinalizer(lambda: destroy_test_database(TEST_DB_NAME))
+    db_name = settings._test_db_name
+    db_url = settings.test_database_url(db_name)
+    create_test_database(db_name)
+    request.addfinalizer(lambda: destroy_test_database(db_name))
 
-    engine = create_engine(DATABASE_URL)
+    engine = create_engine(db_url)
     Base.metadata.create_all(bind=engine)
     yield engine
     Base.metadata.drop_all(bind=engine)
