@@ -282,18 +282,38 @@ Represents a product sold by the garden center.
 Ensure Postgres is installed, then:
 
 ```
-pip install sqlalchemy psycopg2-binary
+pip install sqlalchemy psycopg2-binary python-dotenv
 pip freeze > requirements.txt
 ```
 
-### Database Connection Configuration:
+## Database Connection Configuration:
 
-The database connection is configured via `DATABASE_URL`, read at startup, and passed to `create_engine()`:
+The database credentials are read from environment variables via `src/config.py`, which loads them from a `.env` file at the project root using `python-dotenv`.
 
+1. Copy the example file and fill in your local values:
+```bash
+cp .env-example .env
 ```
-DATABASE_URL = "postgresql://root:root@127.0.0.1:5432/gardendb"
-engine = create_engine(DATABASE_URL, echo=True, future=True)
+
+2. '.env' should define:
+```dotenv
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=your_db_name
+TEST_DB_NAME=your_test_db_name
 ```
+
+3. `config.py` validates the environment variables on import, raises `RunTimeError` if an area is missing, and exposes a `Settings` instances for building connection URLs:
+```python
+from config import settings
+
+engine = create_engine(settings.database_url(), echo=True, future=True)
+```
+
+### Building Connection URLs
+Both `.database_url()` and `.test_database_url()` of `settings` builds a Postgres URL using the same credentials, and defaults to `DB_NAME` and `TEST_DB_NAME` respectively. Otherwise, they accept an explicit database name pointing to a different database in the server.
 
 ### Schema Drop-and-Recreate Behavior
 
