@@ -1,10 +1,10 @@
 {
   "info": {
-    "_postman_id": "ca16df45-a247-43a8-a901-66a1fc26ff24",
+    "_postman_id": "715178fc-228f-43aa-91d2-56b0a17b210d",
     "name": "Snapdragons",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "56711438",
-    "_collection_link": "https://go.postman.co/collection/56711438-ca16df45-a247-43a8-a901-66a1fc26ff24?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/56711438-715178fc-228f-43aa-91d2-56b0a17b210d?source=collection_link"
   },
   "item": [
     {
@@ -66,6 +66,16 @@
     {
       "name": "Create Product",
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzg1MzU3ODMwfQ.JWf1UpVkbFu3kcZOaIZkvoeEFGQgRwL963e5nuzQBD4",
+              "type": "string"
+            }
+          ]
+        },
         "method": "POST",
         "header": [],
         "body": {
@@ -119,6 +129,16 @@
     {
       "name": "Update Product",
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzg1MzU3ODMwfQ.JWf1UpVkbFu3kcZOaIZkvoeEFGQgRwL963e5nuzQBD4",
+              "type": "string"
+            }
+          ]
+        },
         "method": "PUT",
         "header": [],
         "body": {
@@ -161,6 +181,16 @@
     {
       "name": "Delete Product",
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzg1MzU3ODMwfQ.JWf1UpVkbFu3kcZOaIZkvoeEFGQgRwL963e5nuzQBD4",
+              "type": "string"
+            }
+          ]
+        },
         "method": "DELETE",
         "header": [],
         "url": {
@@ -175,6 +205,33 @@
           ]
         },
         "description": "Deletes the product with the specified ID from the local API (`DELETE /products/1`). If the product does not exist, the API returns `404 Not Found` with a response body such as `{ \"detail\": \"Product with id 1 not found\" }`."
+      },
+      "response": []
+    },
+    {
+      "name": "Create Token (Login)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\": \"manager\",\r\n    \"password\": \"admin\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8000/tokens",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "tokens"
+          ]
+        }
       },
       "response": []
     }

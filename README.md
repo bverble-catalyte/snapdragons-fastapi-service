@@ -63,14 +63,19 @@ This project contains a `postman.json` file which can be imported into Postman t
 
 ### Summary
 
-| Method | Path | Description |
-| --- | --- | --- |
-| `GET` | `/db-check` | [Database Check](#get-db-check)
-| `GET` | `/products` | [View Products](#get-products)
-| `POST` | `/products` | [Create Product](#post-products)
-| `GET` | `/products/{id}` | [View Product](#get-productsid)
-| `PUT` | `/products/{id}` | [Update Product](#put-productsid)
-| `DELETE` | `/products/{id}` | [Delete Product](#delete-productsid)
+| Method | Path | Requires Auth | Description |
+| --- | --- | --- | --- |
+| `GET` | `/db-check` | No | [Database Check](#get-db-check)
+| `GET` | `/products` | No | [View Products](#get-products)
+| `POST` | `/products` | **Yes** | [Create Product](#post-products)
+| `GET` | `/products/{id}` | No | [View Product](#get-productsid)
+| `PUT` | `/products/{id}` | **Yes** | [Update Product](#put-productsid)
+| `DELETE` | `/products/{id}` | **Yes** | [Delete Product](#delete-productsid)
+| `POST` | `/tokens` | No | [Create Token](#post-tokens)
+
+### Authorization
+
+Some endpoints require authorization via JWT. See the [create token](#post-tokens) endpoint for details.
 
 ### `GET` /db-check
 
@@ -123,13 +128,11 @@ Create a new product.
 
 `application/json` — [`ProductCreate`](#productcreate)
 
-| Field | Type | Required | Notes |
+**Request Headers**
+
+| Name | Required | Contents | Notes |
 | --- | --- | --- | --- |
-| `name` | string | yes | The product name, min length `1` |
-| `unit` | string | yes | The product's unit of sale (e.g. "each", "bag", "lb"), min length `1` |
-| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |
-| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |
-| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |
+| Authorization | Yes | `"Bearer: ACCESS_TOKEN"` | See [Authorization](#authorization)
 
 **Responses**
 
@@ -182,13 +185,11 @@ Update a product with a given ID.
 
 `application/json` — [`ProductCreate`](#productcreate)
 
-| Field | Type | Required | Notes |
+**Request Headers**
+
+| Name | Required | Contents | Notes |
 | --- | --- | --- | --- |
-| `name` | string | yes | The product name, min length `1` |
-| `unit` | string | yes | The product's unit of sale (e.g. "each", "bag", "lb"), min length `1` |
-| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |
-| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |
-| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |
+| Authorization | Yes | `"Bearer: ACCESS_TOKEN"` | See [Authorization](#authorization)
 
 **Responses**
 
@@ -214,12 +215,40 @@ Delete a product with a given ID.
 | --- | --- | --- | --- | --- |
 | `id` | path | int | yes |  |
 
+**Request Headers**
+
+| Name | Required | Contents | Notes |
+| --- | --- | --- | --- |
+| Authorization | Yes | `"Bearer: ACCESS_TOKEN"` | See [Authorization](#authorization)
+
 **Responses**
 
 | Status | Description | Body |
 | --- | --- | --- |
 | `204` | The product was deleted successfully. | — |
 | `404` | A product with that ID does not exist. | — |
+| `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
+
+[Back to Summary](#summary)
+
+---
+
+### `POST` /tokens
+
+**Create Token (Login)**
+
+Create a new session token in order to access protected endpoints.
+
+**Request body** (required)
+
+`application/json` — [`UserCredentials`](#usercredentials)
+
+**Responses**
+
+| Status | Description | Body |
+| --- | --- | --- |
+| `201` | The token was created successfully. | [`TokenRead`](#tokenread) |
+| `401` | Invalid username or password provided. | — |
 | `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
 
 [Back to Summary](#summary)
@@ -266,6 +295,24 @@ Represents a product sold by the garden center.
 | `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |
 | `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |
 | `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |
+
+### TokenRead
+
+Contains information about a newly generated access token.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `access_token` | string | yes | A JWT for API access |
+| `token_type` | string | yes | Always `"bearer"` |
+
+### UserCredentials
+
+An object containing login information.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `username` | string | yes |  |
+| `password` | string | yes |  |
 
 ### ValidationError
 
