@@ -11,19 +11,16 @@ from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
 from database import Base, SessionLocal, engine, get_db
-from models import (
-    Category,
-    CategoryCreate,
-    CategoryRead,
+from models.category import Category, CategoryCreate, CategoryRead
+from models.misc import DatabaseStatus
+from models.product import (
     CategoryReadWithProducts,
-    DatabaseStatus,
     Product,
     ProductCreate,
     ProductRead,
-    TokenRead,
-    User,
-    UserCredentials,
 )
+from models.tokens import TokenRead
+from models.user import User, UserCredentials
 
 # generate a secret key in PowerShell:
 #   [Convert]::ToBase64String([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(32))

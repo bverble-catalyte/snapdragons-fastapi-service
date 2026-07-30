@@ -3,7 +3,7 @@ from decimal import Decimal
 import pytest
 from pydantic import ValidationError
 
-from models import ProductCreate
+from models.product import ProductCreate
 
 
 def test_product_name_must_be_nonempty(valid_product_kwargs):

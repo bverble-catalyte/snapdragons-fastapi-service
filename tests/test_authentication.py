@@ -8,7 +8,9 @@ from sqlalchemy.orm import Session
 
 import database
 from main import app, get_db
-from models import Product, ProductCreate, ProductRead, TokenRead, UserCredentials
+from models.product import Product, ProductCreate, ProductRead
+from models.tokens import TokenRead
+from models.user import UserCredentials
 
 
 def test_create_token_should_issue_token_on_valid_credentials(

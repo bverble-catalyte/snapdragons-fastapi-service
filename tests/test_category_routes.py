@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy import select
 
-from models import Category, CategoryCreate, CategoryRead
+from models.category import Category, CategoryCreate, CategoryRead
 
 
 def test_create_category_should_create_category(

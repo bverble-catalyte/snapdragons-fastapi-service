@@ -1,11 +1,12 @@
 from decimal import Decimal
-from typing import Annotated, List, Literal
+from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, StringConstraints
 from sqlalchemy import Boolean, ForeignKey, Identity, Integer, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+from models.category import Category, CategoryRead
 
 PRODUCT_NAME_TITLE = "Product Name"
 PRODUCT_NAME_DESC = "The product name"
@@ -32,41 +33,23 @@ CATEGORY_NAME_TITLE = "Category Name"
 CATEGORY_NAME_DESC = "The name of the category"
 
 
-class CategoryCreate(BaseModel):
-    name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
-        Field(title=CATEGORY_NAME_TITLE, description=CATEGORY_NAME_DESC)
-    )
-
-
-class CategoryRead(BaseModel):
-    id: PositiveInt = Field(
-        title="Category ID", description="The unique category identifier"
-    )
-    name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
-        Field(title=CATEGORY_NAME_TITLE, description=CATEGORY_NAME_DESC)
-    )
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class CategoryReadWithProducts(BaseModel):
-    id: PositiveInt = Field(
-        title="Category ID", description="The unique category identifier"
-    )
-    name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
-        Field(title=CATEGORY_NAME_TITLE, description=CATEGORY_NAME_DESC)
-    )
-    products: Annotated[list[ProductRead], Field(min_length=0)]
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class Category(Base):
-    __tablename__ = "categories"
+class Product(Base):
+    __tablename__ = "product"
 
     id: Mapped[int] = mapped_column(Integer, Identity(always=True), primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
-    products: Mapped[List["Product"]] = relationship(back_populates="category")
+    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
+    category: Mapped["Category"] = relationship(back_populates="products")
+    unit: Mapped[str] = mapped_column(nullable=False)
+    cost_per_unit: Mapped[Decimal] = mapped_column(
+        Numeric(precision=10, scale=2), nullable=False
+    )
+    price_per_unit: Mapped[Decimal] = mapped_column(
+        Numeric(precision=10, scale=2), nullable=False
+    )
+    quantity_in_stock: Mapped[Decimal] = mapped_column(
+        Numeric(precision=10, scale=2), nullable=False
+    )
     is_deleted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
 
@@ -151,65 +134,13 @@ class ProductRead(BaseModel):
     )
 
 
-class Product(Base):
-    __tablename__ = "product"
-
-    id: Mapped[int] = mapped_column(Integer, Identity(always=True), primary_key=True)
-    name: Mapped[str] = mapped_column(nullable=False)
-    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
-    category: Mapped["Category"] = relationship(back_populates="products")
-    unit: Mapped[str] = mapped_column(nullable=False)
-    cost_per_unit: Mapped[Decimal] = mapped_column(
-        Numeric(precision=10, scale=2), nullable=False
+class CategoryReadWithProducts(BaseModel):
+    id: PositiveInt = Field(
+        title="Category ID", description="The unique category identifier"
     )
-    price_per_unit: Mapped[Decimal] = mapped_column(
-        Numeric(precision=10, scale=2), nullable=False
+    name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
+        Field(title=CATEGORY_NAME_TITLE, description=CATEGORY_NAME_DESC)
     )
-    quantity_in_stock: Mapped[Decimal] = mapped_column(
-        Numeric(precision=10, scale=2), nullable=False
-    )
-    is_deleted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-
-
-class DatabaseStatus(BaseModel):
-    status: str = Field(title="Status", description="Database connection status")
-    product_count: int = Field(
-        title="Product Count", description="The number of rows in the product table"
-    )
-
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "status": "connected",
-                "product_count": 1,
-            }
-        }
-    )
-
-
-class UserCredentials(BaseModel):
-    username: Annotated[str, StringConstraints(min_length=1)] = Field(
-        title="Username", description="The username used for login"
-    )
-    password: Annotated[str, StringConstraints(min_length=1)] = Field(
-        title="Password", description="The password used for login"
-    )
-
-
-class TokenRead(BaseModel):
-    access_token: str = Field(
-        title="Access Token", description="The JWT for API access"
-    )
-    token_type: Literal["bearer"] = Field(
-        title="Token Type", description='The token type (always "bearer")'
-    )
-
-
-class User(Base):
-    __tablename__ = "users"
-
-    id: Mapped[int] = mapped_column(Integer, Identity(always=True), primary_key=True)
-    username: Mapped[str] = mapped_column(nullable=False)
-    password_hash: Mapped[str] = mapped_column(nullable=False)
+    products: Annotated[list[ProductRead], Field(min_length=0)]
 
     model_config = ConfigDict(from_attributes=True)

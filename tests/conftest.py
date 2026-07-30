@@ -8,8 +8,11 @@ from sqlalchemy import create_engine, event, func, select
 from sqlalchemy.orm import sessionmaker
 
 from config import settings
+from database import Base
 from main import app, get_current_user, get_db
-from models import Base, Category, Product, User, UserCredentials
+from models.category import Category
+from models.product import Product
+from models.user import User, UserCredentials
 
 
 def create_test_database(db_name: str) -> None:

@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
-from models import Product, ProductCreate, ProductRead
+from models.product import Product, ProductCreate, ProductRead
 
 
 def test_create_product(
