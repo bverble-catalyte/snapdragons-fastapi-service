@@ -95,3 +95,60 @@ As the garden center's technology partner, I want obviously invalid input (like 
 As the garden center's technology partner, I want every endpoint's possible responses, success and failure, documented and verifiable, so that anyone integrating with this API knows exactly what to expect in every case.
 
 **F5.5.1** The system shall provide a `/docs` endpoint that provides a list of all API endpoints, the request/response JSON schemas for the endpoints, and a list of possible response codes for each endpoint.
+
+# Day 6 Spec
+
+**B6.1 Organize Products Into Categories** 
+As a garden center manager, I want to create categories (like "Seeds" or "Tools") that products can belong to, so that the catalog is organized the way staff and customers actually think about it.
+
+**F6.1.1** The system shall provide the following schemas:
+
+```
+# for category creation (POST /categories)
+CategoryCreate:
+    name: str
+
+# for categories saved in the database
+CategoryRead:
+    id: int
+    name: str
+
+# for categories and their list of products
+CategoryReadWithProducts:
+    id: int
+    name: str
+    products: [ProductRead]
+```
+
+**F6.1.2** The product schema shall be updated to include a category attribute.
+
+```
+ProductRead:
+    id: int
+    ...
+    category: CategoryRead
+```
+
+**F6.1.3** The system shall represent a product's category as a foreign key into the categories table.
+
+**B6.2 Assign a Product to a Category on Creation** 
+As a garden center employee, I want to specify which category a product belongs to when I create it, so that every product is organized from the moment it enters the system.
+
+**F6.2.1** The system shall require a category on product creation and assign it to that product.
+
+**F6.2.2** The `POST /products` endpoint for creating new products will append the product to a list of products of a category.
+
+**B6.3 Prevent Products From Referencing a Category That Doesn't Exist** 
+As the garden center's technology partner, I want the system to reject a product creation request that references a nonexistent category, so that the catalog can never end up in an inconsistent state.
+
+**F6.3.1** The `POST /products` endpoint shall return a `404 Not Found` if the category does not exist.
+
+**B6.4 View a Category Along With Everything In It** 
+As a garden center employee, I want to look up a category and see the full list of products assigned to it, so that I can answer "what's in this section" without manually cross-referencing every product.
+
+**F6.4.1** The system shall provide a `GET /categories/{id}/products` endpoint to display all products in that category.
+
+**B6.5 Product Responses Reflect Their Category, Not Just an ID** 
+As a garden center employee, I want a product's response to show me something meaningful about its category (like its name), not just an opaque internal id, so that the data is actually useful to read without a second lookup.
+
+**F6.1.1** The system shall provide a cateogory information as a Category object, containing both it's name and id.
