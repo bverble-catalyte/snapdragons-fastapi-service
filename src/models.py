@@ -7,20 +7,47 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from database import Base
 
-NAME_TITLE = "Product Name"
-NAME_DESC = "The product name"
+PRODUCT_NAME_TITLE = "Product Name"
+PRODUCT_NAME_DESC = "The product name"
 
-UNIT_TITLE = "Unit of Sale"
-UNIT_DESC = 'The product\'s unit of sale (e.g. "each", "bag", "lb")'
+PRODUCT_UNIT_TITLE = "Unit of Sale"
+PRODUCT_UNIT_DESC = 'The product\'s unit of sale (e.g. "each", "bag", "lb")'
 
-COST_TITLE = "Cost Per Unit"
-COST_PER_UNIT_DESC = "Amount the garden center pays suppliers, in dollars per unit"
+PRODUCT_COST_TITLE = "Cost Per Unit"
+PRODUCT_COST_PER_UNIT_DESC = (
+    "Amount the garden center pays suppliers, in dollars per unit"
+)
 
-PRICE_TITLE = "Price Per Unit"
-PRICE_PER_UNIT_DESC = "Amount the garden center charges customers, in dollars per unit"
+PRODUCT_PRICE_TITLE = "Price Per Unit"
+PRODUCT_PRICE_PER_UNIT_DESC = (
+    "Amount the garden center charges customers, in dollars per unit"
+)
 
-QUANTITY_TITLE = "Quantity In Stock"
-QUANTITY_IN_STOCK_DESC = "Current amount of product in inventory, in stock units"
+PRODUCT_QUANTITY_TITLE = "Quantity In Stock"
+PRODUCT_QUANTITY_IN_STOCK_DESC = (
+    "Current amount of product in inventory, in stock units"
+)
+
+CATEGORY_NAME_TITLE = "Category Name"
+CATEGORY_NAME_DESC = "The name of the category"
+
+
+class CategoryCreate(BaseModel):
+    id: PositiveInt = Field(
+        title="Category ID", description="The unique category identifier"
+    )
+    name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
+        Field(title=CATEGORY_NAME_TITLE, description=CATEGORY_NAME_DESC)
+    )
+
+
+class CategoryRead(BaseModel):
+    id: PositiveInt = Field(
+        title="Category ID", description="The unique category identifier"
+    )
+    name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
+        Field(title=CATEGORY_NAME_TITLE, description=CATEGORY_NAME_DESC)
+    )
 
 
 class ProductCreate(BaseModel):
@@ -31,20 +58,21 @@ class ProductCreate(BaseModel):
     """
 
     name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
-        Field(title=NAME_TITLE, description=NAME_DESC)
+        Field(title=PRODUCT_NAME_TITLE, description=PRODUCT_NAME_DESC)
     )
     unit: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
-        Field(title=UNIT_TITLE, description=UNIT_DESC)
+        Field(title=PRODUCT_UNIT_TITLE, description=PRODUCT_UNIT_DESC)
     )
     cost_per_unit: Annotated[Decimal, Field(gt=0, decimal_places=2)] = Field(
-        title=COST_TITLE, description=COST_PER_UNIT_DESC
+        title=PRODUCT_COST_TITLE, description=PRODUCT_COST_PER_UNIT_DESC
     )
     price_per_unit: Annotated[Decimal, Field(gt=0, decimal_places=2)] = Field(
-        title=PRICE_TITLE, description=PRICE_PER_UNIT_DESC
+        title=PRODUCT_PRICE_TITLE, description=PRODUCT_PRICE_PER_UNIT_DESC
     )
     quantity_in_stock: Annotated[Decimal, Field(ge=0)] = Field(
-        title=QUANTITY_TITLE, description=QUANTITY_IN_STOCK_DESC
+        title=PRODUCT_QUANTITY_TITLE, description=PRODUCT_QUANTITY_IN_STOCK_DESC
     )
+    category_id: PositiveInt = Field(title="The product's category ID")
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -55,6 +83,7 @@ class ProductCreate(BaseModel):
                 "cost_per_unit": "1.75",
                 "price_per_unit": "4.99",
                 "quantity_in_stock": "40",
+                "category_id": 1,
             }
         },
     )
@@ -67,19 +96,23 @@ class ProductRead(BaseModel):
         title="Product ID", description="The unique product identifier"
     )
     name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
-        Field(title=NAME_TITLE, description=NAME_DESC)
+        Field(title=PRODUCT_NAME_TITLE, description=PRODUCT_NAME_DESC)
     )
     unit: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
-        Field(title=UNIT_TITLE, description=UNIT_DESC)
+        Field(title=PRODUCT_UNIT_TITLE, description=PRODUCT_UNIT_DESC)
     )
     cost_per_unit: Annotated[Decimal, Field(gt=0, decimal_places=2)] = Field(
-        title=COST_TITLE, description=COST_PER_UNIT_DESC
+        title=PRODUCT_COST_TITLE, description=PRODUCT_COST_PER_UNIT_DESC
     )
     price_per_unit: Annotated[Decimal, Field(gt=0, decimal_places=2)] = Field(
-        title=UNIT_TITLE, description=PRICE_PER_UNIT_DESC
+        title=PRODUCT_UNIT_TITLE, description=PRODUCT_PRICE_PER_UNIT_DESC
     )
     quantity_in_stock: Annotated[Decimal, Field(ge=0)] = Field(
-        title=QUANTITY_TITLE, description=QUANTITY_IN_STOCK_DESC
+        title=PRODUCT_QUANTITY_TITLE, description=PRODUCT_QUANTITY_IN_STOCK_DESC
+    )
+    category: CategoryRead = Field(
+        title="The product category",
+        description="The category this product belongs to",
     )
 
     model_config = ConfigDict(
@@ -92,6 +125,7 @@ class ProductRead(BaseModel):
                 "cost_per_unit": "1.75",
                 "price_per_unit": "4.99",
                 "quantity_in_stock": "40",
+                "category": {"id": 1, "name": "Pots and Planters"},
             }
         },
     )
