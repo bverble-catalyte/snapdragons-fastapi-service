@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 
 from config import settings
 from main import app, get_current_user, get_db
-from models import Base, Product, User, UserCredentials
+from models import Base, Category, Product, User, UserCredentials
 
 
 def create_test_database(db_name: str) -> None:
@@ -68,13 +68,24 @@ def db_session(db_engine):
 
 
 @pytest.fixture()
-def valid_product_kwargs():
+def valid_category_kwargs():
+    return {"name": "Pots and Planters"}
+
+
+@pytest.fixture()
+def invalid_category_kwargs():
+    return {"name": ""}
+
+
+@pytest.fixture()
+def valid_product_kwargs(first_existing_category):
     return {
         "name": "12in Terra Cotta Clay Pot",
         "unit": "each",
         "cost_per_unit": Decimal("5.00"),
         "price_per_unit": Decimal("8.75"),
-        "quantity_in_stock": Decimal("55"),
+        "quantity_in_stock": Decimal("55.00"),
+        "category_id": first_existing_category.id,
     }
 
 
@@ -89,8 +100,23 @@ def invalid_product_kwargs():
     }
 
 
+@pytest.fixture
+def seed_category(db_session, valid_category_kwargs):
+    category = Category(**valid_category_kwargs)
+    db_session.add(category)
+    db_session.commit()
+
+
+@pytest.fixture
+def first_existing_category(db_session, seed_category):
+    return db_session.scalars(select(Category)).first()
+
+
 @pytest.fixture()
-def seed_product(db_session, valid_product_kwargs):
+def seed_product(
+    db_session, seed_category, first_existing_category, valid_product_kwargs
+):
+    valid_product_kwargs["category_id"] = first_existing_category.id
     product = Product(**valid_product_kwargs)
     db_session.add(product)
     db_session.commit()
@@ -99,6 +125,12 @@ def seed_product(db_session, valid_product_kwargs):
 @pytest.fixture
 def first_existing_product(db_session, seed_product):
     return db_session.scalars(select(Product)).first()
+
+
+@pytest.fixture()
+def unused_category_id(db_session, seed_product):
+    max_id = db_session.scalar(select(func.max(Category.id))) or 0
+    return max_id + 1
 
 
 @pytest.fixture()

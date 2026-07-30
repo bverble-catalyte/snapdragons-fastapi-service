@@ -46,6 +46,8 @@ class CategoryRead(BaseModel):
         Field(title=CATEGORY_NAME_TITLE, description=CATEGORY_NAME_DESC)
     )
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class CategoryReadWithProducts(BaseModel):
     id: PositiveInt = Field(
@@ -55,6 +57,8 @@ class CategoryReadWithProducts(BaseModel):
         Field(title=CATEGORY_NAME_TITLE, description=CATEGORY_NAME_DESC)
     )
     products: Annotated[list[ProductRead], Field(min_length=0)]
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Category(Base):

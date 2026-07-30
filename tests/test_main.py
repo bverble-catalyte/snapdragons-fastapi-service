@@ -8,29 +8,27 @@ from sqlalchemy.orm import Session
 from models import Product, ProductCreate, ProductRead
 
 
-@pytest.fixture
-def basil_plant_kwargs():
-    return {
-        "name": "Basil Plant - 4in Pot",
-        "unit": "each",
-        "cost_per_unit": "1.75",
-        "price_per_unit": "4.99",
-        "quantity_in_stock": "40",
-    }
-
-
-def test_create_product(authenticated_client, basil_plant_kwargs):
-    response = authenticated_client.post("/products", json=basil_plant_kwargs)
-    assert response.status_code == 201
-    data = response.json()
-    assert (
-        "name"
-        and "unit"
-        and "cost_per_unit"
-        and "price_per_unit"
-        and "quantity_in_stock" in data
+def test_create_product(
+    authenticated_client, seed_category, valid_category_kwargs, valid_product_kwargs
+):
+    product = ProductCreate.model_validate(valid_product_kwargs)
+    response = authenticated_client.post(
+        "/products", json=product.model_dump(mode="json")
     )
-    assert isinstance(data["name"], str)
+    assert response.status_code == 201
+    product = ProductRead(**response.json())
+
+    expected = valid_product_kwargs | {
+        "id": product.id,
+        "category": {
+            "id": valid_product_kwargs["category_id"],
+            "name": valid_category_kwargs["name"],
+        },
+    }
+    del expected["category_id"]
+    expected = ProductRead(**expected)
+
+    assert product.model_dump(mode="json") == expected.model_dump(mode="json")
 
 
 def test_create_product_with_invalid_payload_returns_422(
