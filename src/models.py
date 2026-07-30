@@ -1,9 +1,9 @@
 from decimal import Decimal
-from typing import Annotated, Literal
+from typing import Annotated, List, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, StringConstraints
-from sqlalchemy import Boolean, Identity, Integer, Numeric
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Boolean, ForeignKey, Identity, Integer, Numeric
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
 
@@ -48,6 +48,24 @@ class CategoryRead(BaseModel):
     name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
         Field(title=CATEGORY_NAME_TITLE, description=CATEGORY_NAME_DESC)
     )
+
+
+class CategoryReadWithProducts(BaseModel):
+    id: PositiveInt = Field(
+        title="Category ID", description="The unique category identifier"
+    )
+    name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
+        Field(title=CATEGORY_NAME_TITLE, description=CATEGORY_NAME_DESC)
+    )
+    products: Annotated[list[ProductRead], Field(min_length=0)]
+
+
+class Category(Base):
+    __tablename__ = "categories"
+
+    id: Mapped[int] = mapped_column(Integer, Identity(always=True), primary_key=True)
+    name: Mapped[str] = mapped_column(nullable=False)
+    products: Mapped[List["Product"]] = relationship(back_populates="category")
 
 
 class ProductCreate(BaseModel):
@@ -136,6 +154,8 @@ class Product(Base):
 
     id: Mapped[int] = mapped_column(Integer, Identity(always=True), primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
+    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
+    category: Mapped["Category"] = relationship(back_populates="products")
     unit: Mapped[str] = mapped_column(nullable=False)
     cost_per_unit: Mapped[Decimal] = mapped_column(
         Numeric(precision=10, scale=2), nullable=False
