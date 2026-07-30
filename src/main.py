@@ -379,7 +379,10 @@ def delete_category(
     user: User = Depends(get_current_user),
 ) -> None:
     """Soft deletes emptry categories based on given ID."""
-    product_count = len(category.products)
+    products_list = category.products
+    product_count = len(
+        [product for product in products_list if product.is_deleted is False]
+    )
     if product_count != 0:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
