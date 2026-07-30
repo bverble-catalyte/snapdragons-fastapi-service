@@ -357,6 +357,9 @@ def update_category(
     responses={
         401: {"description": "The client is not authenticated"},
         404: {"description": "A category with that ID does not exist."},
+        409: {
+            "description": "The category must not have any products associated with it."
+        },
     },
 )
 def delete_category(
@@ -364,4 +367,11 @@ def delete_category(
     category: Category = Depends(get_category_by_id),
     user: User = Depends(get_current_user),
 ) -> None:
-    return
+    """Soft deletes emptry categories based on given ID."""
+    if category.products is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"The category must not have any products associated with it.",
+        )
+    category.is_deleted = True
+    db.commit()

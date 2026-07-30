@@ -63,6 +63,7 @@ class Category(Base):
     id: Mapped[int] = mapped_column(Integer, Identity(always=True), primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     products: Mapped[List["Product"]] = relationship(back_populates="category")
+    is_deleted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
 
 class ProductCreate(BaseModel):
