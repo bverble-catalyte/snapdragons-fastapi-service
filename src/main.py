@@ -362,6 +362,11 @@ def update_category(
     user: User = Depends(get_current_user),
 ) -> Category:
     """Update a category with a given ID."""
+    for field, value in category_create.model_dump().items():
+        setattr(category, field, value)
+    db.commit()
+    db.refresh(category)
+    return category
 
 
 @app.delete(
@@ -381,10 +386,11 @@ def delete_category(
     user: User = Depends(get_current_user),
 ) -> None:
     """Soft deletes emptry categories based on given ID."""
-    if category.products is not None:
+    product_count = len(category.products)
+    if product_count != 0:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"The category must not have any products associated with it.",
+            detail=f"The category must not have any products associated with it. Currently, this category is associated with {product_count} product{'s' if product_count != 1 else ''}.",
         )
     category.is_deleted = True
     db.commit()
