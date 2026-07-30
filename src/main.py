@@ -218,13 +218,20 @@ def get_product(product: Product = Depends(get_product_by_id)) -> Product:
     status_code=status.HTTP_201_CREATED,
     response_model=ProductRead,
     response_description="The newly created product",
-    responses={401: {"description": "The client is not authenticated"}},
+    responses={
+        401: {"description": "The client is not authenticated"},
+        404: {"description": "The category was not found"},
+    },
 )
 def create_product(
     db: DbSession, product: ProductCreate, user: User = Depends(get_current_user)
 ):
     """Create a new product."""
+    category = db.get(Category, product.category_id)
+    if category is None:
+        raise HTTPException(status_code=404, detail="The category was not found")
     new_product = Product(**product.model_dump())
+    category.products.append(new_product)
     db.add(new_product)
     db.commit()
     return new_product
