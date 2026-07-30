@@ -12,6 +12,10 @@ from sqlalchemy.orm import Session
 
 from database import Base, SessionLocal, engine, get_db
 from models import (
+    Category,
+    CategoryCreate,
+    CategoryRead,
+    CategoryReadWithProducts,
     DatabaseStatus,
     Product,
     ProductCreate,
@@ -136,6 +140,21 @@ def get_product_by_id(id: int, db: DbSession) -> Product:
     return product
 
 
+def get_category_by_id(id: int, db: DbSession) -> Category:
+    """Looks up a category by a given ID or raises a 404: Not Found"""
+    category = (
+        db.query(Category)
+        .filter(Category.id == id, Category.is_deleted == False)
+        .first()
+    )
+    if category is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Category with id {id} not found",
+        )
+    return category
+
+
 @app.get(
     "/db-check",
     response_model=DatabaseStatus,
@@ -154,6 +173,9 @@ def db_check(db: DbSession):
         )
 
 
+# =========================================
+#           PRODUCTS
+# =========================================
 @app.get(
     "/products",
     response_model=List[ProductRead],
@@ -247,3 +269,92 @@ def delete_product(
     """Soft deletes product based on given ID."""
     product.is_deleted = True
     db.commit()
+
+
+# =========================================
+#           CATEGORIES
+# =========================================
+
+
+@app.get(
+    "/categories",
+    response_model=List[CategoryRead],
+    response_description="The list of categories",
+)
+def view_categories(
+    db: DbSession,
+    name: Annotated[
+        str | None, Query(description="Name search query, partial match")
+    ] = None,
+):
+    """View all categories in the database"""
+
+
+@app.get(
+    "/categories/{id}",
+    response_model=CategoryRead,
+    response_description="The category",
+    responses={404: {"description": "A category with that ID does not exist."}},
+)
+def get_category(category: Category = Depends(get_category_by_id)) -> Category:
+    """View a category with a given ID."""
+    return category
+
+
+@app.get(
+    "/categories/{id}/products",
+    response_model=CategoryReadWithProducts,
+    response_description="The category",
+    responses={404: {"description": "A category with that ID does not exist."}},
+)
+def get_category_with_products(
+    category: Category = Depends(get_category_by_id),
+) -> Category:
+    """View a category with a given ID and all its associated products."""
+
+
+@app.post(
+    "/categories",
+    status_code=status.HTTP_201_CREATED,
+    response_model=CategoryRead,
+    response_description="The newly created category",
+    responses={401: {"description": "The client is not authenticated"}},
+)
+def create_category(
+    db: DbSession, category: CategoryCreate, user: User = Depends(get_current_user)
+):
+    """Create a new category."""
+
+
+@app.put(
+    "/categories/{id}",
+    response_model=CategoryRead,
+    response_description="The updated category",
+    responses={
+        401: {"description": "The client is not authenticated"},
+        404: {"description": "A category with that ID does not exist."},
+    },
+)
+def update_category(
+    db: DbSession,
+    category_create: CategoryCreate,
+    category: Category = Depends(get_category_by_id),
+    user: User = Depends(get_current_user),
+) -> Category:
+    """Update a category with a given ID."""
+
+
+@app.delete(
+    "/categories/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        401: {"description": "The client is not authenticated"},
+        404: {"description": "A category with that ID does not exist."},
+    },
+)
+def delete_category(
+    db: DbSession,
+    category: Category = Depends(get_category_by_id),
+    user: User = Depends(get_current_user),
+) -> None:
+    return
