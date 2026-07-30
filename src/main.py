@@ -69,7 +69,7 @@ def get_current_user(db: DbSession, token: str = Depends(get_bearer_token)) -> U
             detail="Expired bearer token",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    except ValueError, jwt.PyJWTError:
+    except (ValueError, jwt.PyJWTError):
         raise credentials_exception
 
     user = db.get(User, user_id)
