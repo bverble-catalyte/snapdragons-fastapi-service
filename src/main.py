@@ -295,6 +295,14 @@ def view_categories(
     ] = None,
 ):
     """View all categories in the database"""
+    categories_query = db.query(Category).filter(Category.is_deleted == False)
+    if name is not None:
+        normalized_name = normalize(name)
+        return [
+            p for p in categories_query.all() if normalized_name in normalize(p.name)
+        ]
+    else:
+        return categories_query.all()
 
 
 @app.get(
@@ -318,6 +326,7 @@ def get_category_with_products(
     category: Category = Depends(get_category_by_id),
 ) -> Category:
     """View a category with a given ID and all its associated products."""
+    return category
 
 
 @app.post(
