@@ -33,9 +33,6 @@ CATEGORY_NAME_DESC = "The name of the category"
 
 
 class CategoryCreate(BaseModel):
-    id: PositiveInt = Field(
-        title="Category ID", description="The unique category identifier"
-    )
     name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
         Field(title=CATEGORY_NAME_TITLE, description=CATEGORY_NAME_DESC)
     )
