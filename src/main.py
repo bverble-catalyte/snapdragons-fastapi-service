@@ -331,6 +331,10 @@ def create_category(
     db: DbSession, category: CategoryCreate, user: User = Depends(get_current_user)
 ):
     """Create a new category."""
+    new_category = Category(**category.model_dump())
+    db.add(new_category)
+    db.commit()
+    return new_category
 
 
 @app.put(
