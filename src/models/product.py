@@ -29,9 +29,6 @@ PRODUCT_QUANTITY_IN_STOCK_DESC = (
     "Current amount of product in inventory, in stock units"
 )
 
-CATEGORY_NAME_TITLE = "Category Name"
-CATEGORY_NAME_DESC = "The name of the category"
-
 
 class Product(Base):
     __tablename__ = "product"
@@ -132,15 +129,3 @@ class ProductRead(BaseModel):
             }
         },
     )
-
-
-class CategoryReadWithProducts(BaseModel):
-    id: PositiveInt = Field(
-        title="Category ID", description="The unique category identifier"
-    )
-    name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
-        Field(title=CATEGORY_NAME_TITLE, description=CATEGORY_NAME_DESC)
-    )
-    products: Annotated[list[ProductRead], Field(min_length=0)]
-
-    model_config = ConfigDict(from_attributes=True)

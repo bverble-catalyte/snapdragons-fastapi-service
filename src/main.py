@@ -12,13 +12,9 @@ from sqlalchemy.orm import Session
 
 from database import Base, SessionLocal, engine, get_db
 from models.category import Category, CategoryCreate, CategoryRead
+from models.composite import CategoryReadWithProducts
 from models.misc import DatabaseStatus
-from models.product import (
-    CategoryReadWithProducts,
-    Product,
-    ProductCreate,
-    ProductRead,
-)
+from models.product import Product, ProductCreate, ProductRead
 from models.tokens import TokenRead
 from models.user import User, UserCredentials
 

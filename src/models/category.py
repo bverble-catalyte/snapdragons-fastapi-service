@@ -1,10 +1,13 @@
-from typing import Annotated, List
+from typing import TYPE_CHECKING, Annotated, List
 
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, StringConstraints
 from sqlalchemy import Boolean, Identity, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+
+if TYPE_CHECKING:
+    from models.product import Product
 
 CATEGORY_NAME_TITLE = "Category Name"
 CATEGORY_NAME_DESC = "The name of the category"
