@@ -71,6 +71,12 @@ This project contains a `postman.json` file which can be imported into Postman t
 | `GET` | `/products/{id}` | No | [View Product](#get-productsid)
 | `PUT` | `/products/{id}` | **Yes** | [Update Product](#put-productsid)
 | `DELETE` | `/products/{id}` | **Yes** | [Delete Product](#delete-productsid)
+| `GET` | `/categories` | No | [View Categories](#get-categories)
+| `POST` | `/categories` | **Yes** | [Create Category](#post-categories)
+| `GET` | `/categories/{id}` | No | [View Category](#get-categoriesid)
+| `GET` | `/categories/{id}/products` | No | [View Products for Category](#get-categoriesidproducts)
+| `PUT` | `/categories/{id}` | **Yes** | [Update Category](#put-categoriesid)
+| `DELETE` | `/categories/{id}` | **Yes** | [Delete Category](#delete-categoriesid)
 | `POST` | `/tokens` | No | [Create Token](#post-tokens)
 
 ### Authorization
@@ -233,6 +239,170 @@ Delete a product with a given ID.
 
 ---
 
+### `GET` /categories
+
+**View Categories**
+
+View all categories in the database.
+
+The name search will be performed on a normalized category name (lowercased and with whitespace stripped). In other words, `"pot"` will match against a category named `"Pots and Planters"`.
+
+**Parameters**
+
+| Name | In | Type | Required | Notes |
+| --- | --- | --- | --- | --- |
+| `name` | query | string | no | |
+
+**Responses**
+
+| Status | Description | Body |
+| --- | --- | --- |
+| `200` | The list of categories | `application/json` array[[`CategoryRead`](#categoryread)] |
+
+[Back to Summary](#summary)
+
+---
+
+### `POST` /categories
+
+**Create Category**
+
+Create a new category.
+
+**Request body** (required)
+
+`application/json` — [`CategoryCreate`](#categorycreate)
+
+**Request Headers**
+
+| Name | Required | Contents | Notes |
+| --- | --- | --- | --- |
+| Authorization | Yes | `"Bearer: ACCESS_TOKEN"` | See [Authorization](#authorization)
+
+**Responses**
+
+| Status | Description | Body |
+| --- | --- | --- |
+| `201` | The newly created category | `application/json` [`CategoryRead`](#categoryread) |
+| `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
+
+[Back to Summary](#summary)
+
+---
+
+### `GET` /categories/{id}
+
+**View Category**
+
+View a category with a given ID.
+
+**Parameters**
+
+| Name | In | Type | Required | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | path | int | yes |  |
+
+**Responses**
+
+| Status | Description | Body |
+| --- | --- | --- |
+| `200` | The category | `application/json` [`CategoryRead`](#categoryread) |
+| `404` | A category with that ID does not exist. | — |
+| `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
+
+[Back to Summary](#summary)
+
+---
+
+### `GET` /categories/{id}/products
+
+**View Products for Category**
+
+View a category with a given ID and all its associated products.
+
+**Parameters**
+
+| Name | In | Type | Required | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | path | int | yes |  |
+
+**Responses**
+
+| Status | Description | Body |
+| --- | --- | --- |
+| `200` | The category | `application/json` [`CategoryReadWithProducts`](#categoryreadwithproducts) |
+| `404` | A category with that ID does not exist. | — |
+| `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
+
+[Back to Summary](#summary)
+
+---
+
+### `PUT` /categories/{id}
+
+**Update Category**
+
+Update a category with a given ID.
+
+**Parameters**
+
+| Name | In | Type | Required | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | path | int | yes |  |
+
+**Request body** (required)
+
+`application/json` — [`CategoryCreate`](#categorycreate)
+
+**Request Headers**
+
+| Name | Required | Contents | Notes |
+| --- | --- | --- | --- |
+| Authorization | Yes | `"Bearer: ACCESS_TOKEN"` | See [Authorization](#authorization)
+
+**Responses**
+
+| Status | Description | Body |
+| --- | --- | --- |
+| `200` | The updated category | `application/json` [`CategoryRead`](#categoryread) |
+| `404` | A category with that ID does not exist. | — |
+| `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
+
+[Back to Summary](#summary)
+
+---
+
+### `DELETE` /categories/{id}
+
+**Delete Category**
+
+Soft deletes category based on given ID.
+
+**Parameters**
+
+| Name | In | Type | Required | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | path | int | yes |  |
+
+**Request Headers**
+
+| Name | Required | Contents | Notes |
+| --- | --- | --- | --- |
+| Authorization | Yes | `"Bearer: ACCESS_TOKEN"` | See [Authorization](#authorization)
+
+**Responses**
+
+| Status | Description | Body |
+| --- | --- | --- |
+| `204` | The category was deleted successfully. | — |
+| `404` | A category with that ID does not exist. | — |
+| `409` | The category must not have any products associated with it. | — |
+| `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
+
+[Back to Summary](#summary)
+
+---
+
 ### `POST` /tokens
 
 **Create Token (Login)**
@@ -256,6 +426,27 @@ Create a new session token in order to access protected endpoints.
 ---
 
 ## Schemas
+
+### CategoryCreate
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `name` | string | yes | The name of the category, min length `1` |
+
+### CategoryRead
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `id` | int | yes | The unique category identifier, min (exclusive) `0` |
+| `name` | string | yes | The name of the category, min length `1` |
+
+### CategoryReadWithProducts
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `id` | int | yes | The unique category identifier, min (exclusive) `0` |
+| `name` | string | yes | The name of the category, min length `1` |
+| `products` | array[[`ProductRead`](#productread)] | yes | min length `0` |
 
 ### DatabaseStatus
 
