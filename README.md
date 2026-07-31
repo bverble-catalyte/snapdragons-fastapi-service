@@ -453,7 +453,7 @@ Create a new session token in order to access protected endpoints.
 | --- | --- | --- | --- |
 | `id` | int | yes | The unique category identifier, min (exclusive) `0` |
 | `name` | string | yes | The name of the category, min length `1` |
-| `products` | array[[`ProductRead`](#productread)] | yes | min length `0` |
+| `products` | array[[`ProductReadWithoutCategory`](#productreadwithoutcategory)] | yes | min length `0` |
 
 ### DatabaseStatus
 
@@ -495,6 +495,19 @@ Represents a product sold by the garden center.
 | `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |
 | `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |
 | `category` | [`CategoryRead`](#categoryread) | yes | The category this product belongs to |
+
+### ProductReadWithoutCategory
+
+Represents a product without its parent category. Used where the product is already nested under its category (see [`CategoryReadWithProducts`](#categoryreadwithproducts)), so repeating the category would just duplicate data the caller already has.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `id` | int | yes | The unique product identifier, min (exclusive) `0` |
+| `name` | string | yes | The product name, min length `1` |
+| `unit` | string | yes | The product's unit of sale (e.g. "each", "bag", "lb"), min length `1` |
+| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |
+| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |
+| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |
 
 ### TokenRead
 

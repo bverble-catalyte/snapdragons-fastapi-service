@@ -1,7 +1,7 @@
 from sqlalchemy import select
 
 from models.category import Category, CategoryCreate, CategoryRead
-from models.product import Product, ProductRead
+from models.product import Product, ProductReadWithoutCategory
 
 
 def test_create_category_should_create_category(
@@ -63,7 +63,9 @@ def test_view_category_products_should_return_category_with_products(
     assert body["name"] == first_existing_category.name
 
     expected_products = [
-        ProductRead.model_validate(p, from_attributes=True).model_dump(mode="json")
+        ProductReadWithoutCategory.model_validate(p, from_attributes=True).model_dump(
+            mode="json"
+        )
         for p in products
     ]
     assert body["products"] == expected_products

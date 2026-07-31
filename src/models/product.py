@@ -99,12 +99,22 @@ class ProductCreate(ProductBase):
     )
 
 
-class ProductRead(ProductBase):
-    """Represents a product sold by the garden center."""
+class ProductReadWithoutCategory(ProductBase):
+    """Represents a product without its parent category.
+
+    Used where the product is already nested under its category, so
+    repeating the category would just duplicate data the caller already has.
+    """
 
     id: PositiveInt = Field(
         title="Product ID", description="The unique product identifier"
     )
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ProductRead(ProductReadWithoutCategory):
+    """Represents a product sold by the garden center."""
 
     category: CategoryRead = Field(
         title="The product category",
