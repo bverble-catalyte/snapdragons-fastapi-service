@@ -1,15 +1,339 @@
 {
   "info": {
-    "_postman_id": "1e25a5a2-6cdb-4ac8-8446-3456c9bdef72",
+    "_postman_id": "3e4f53a5-a578-4774-90fb-c967544642a2",
     "name": "Snapdragons",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "56711619",
-    "_collection_link": "https://go.postman.co/collection/56711619-1e25a5a2-6cdb-4ac8-8446-3456c9bdef72?source=collection_link"
+    "_exporter_id": "56711438",
+    "_collection_link": "https://go.postman.co/collection/56711438-3e4f53a5-a578-4774-90fb-c967544642a2?source=collection_link"
   },
   "item": [
     {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "View Categories",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:8000/categories",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "categories"
+              ]
+            },
+            "description": "## View Categories\n\n`GET localhost:8000/categories`\n\n**Auth:** Not required.\n\nView all categories in the database, optionally filtered by name.\n\nThe name search is performed on a normalized category name (lowercased and with whitespace stripped). For example, `\"pot\"` will match a category named `\"Pots and Planters\"`.\n\n**Query Parameters**\n\n| Name | Required | Notes |\n| --- | --- | --- |\n| `name` | no | Partial, normalized match on category name |\n\n**Responses**\n\n| Status | Description | Body |\n| --- | --- | --- |\n| `200` | The list of categories | `application/json` array[CategoryRead] |\n\n**CategoryRead**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes | The unique category identifier, min (exclusive) `0` |\n| `name` | string | yes | The name of the category, min length `1` |\n"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"flowers\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:8000/categories",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "categories"
+              ]
+            },
+            "description": "## Create Category\n\n`POST localhost:8000/categories`\n\n**Auth:** Requires a Bearer token in the `Authorization` header (`Bearer <ACCESS_TOKEN>`). See **Create Token (Login)** to obtain one.\n\nCreate a new category.\n\n**Request Body** (required) — `application/json` CategoryCreate\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `name` | string | yes | The name of the category, min length `1` |\n\n**Responses**\n\n| Status | Description | Body |\n| --- | --- | --- |\n| `201` | The newly created category | `application/json` CategoryRead |\n| `401` | The client is not authenticated | — |\n| `422` | Validation Error | `application/json` HTTPValidationError |\n\n**CategoryRead**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes | The unique category identifier, min (exclusive) `0` |\n| `name` | string | yes | The name of the category, min length `1` |\n\n\n**HTTPValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `detail` | array[ValidationError] | no |  |\n\n**ValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `loc` | array[string \\| int] | yes |  |\n| `msg` | string | yes |  |\n| `type` | string | yes |  |\n| `input` | any | no |  |\n| `ctx` | object | no |  |\n"
+          },
+          "response": []
+        },
+        {
+          "name": "View Category",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:8000/categories/1",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "categories",
+                "1"
+              ]
+            },
+            "description": "## View Category\n\n`GET localhost:8000/categories/{id}`\n\n**Auth:** Not required.\n\nView a category with a given ID.\n\n**Path Parameters**\n\n| Name | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes |  |\n\n**Responses**\n\n| Status | Description | Body |\n| --- | --- | --- |\n| `200` | The category | `application/json` CategoryRead |\n| `404` | A category with that ID does not exist. | — |\n| `422` | Validation Error | `application/json` HTTPValidationError |\n\n**CategoryRead**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes | The unique category identifier, min (exclusive) `0` |\n| `name` | string | yes | The name of the category, min length `1` |\n\n\n**HTTPValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `detail` | array[ValidationError] | no |  |\n\n**ValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `loc` | array[string \\| int] | yes |  |\n| `msg` | string | yes |  |\n| `type` | string | yes |  |\n| `input` | any | no |  |\n| `ctx` | object | no |  |\n"
+          },
+          "response": []
+        },
+        {
+          "name": "View Products for Category",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:8000/categories/1/products",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "categories",
+                "1",
+                "products"
+              ]
+            },
+            "description": "## View Products for Category\n\n`GET localhost:8000/categories/{id}/products`\n\n**Auth:** Not required.\n\nView a category with a given ID and all its associated products.\n\n**Path Parameters**\n\n| Name | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes |  |\n\n**Responses**\n\n| Status | Description | Body |\n| --- | --- | --- |\n| `200` | The category, with its associated products | `application/json` CategoryReadWithProducts |\n| `404` | A category with that ID does not exist. | — |\n| `422` | Validation Error | `application/json` HTTPValidationError |\n\n**CategoryReadWithProducts**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes | The unique category identifier, min (exclusive) `0` |\n| `name` | string | yes | The name of the category, min length `1` |\n| `products` | array[ProductReadWithoutCategory] | yes | min length `0` |\n\n**ProductReadWithoutCategory**\n\nRepresents a product without its parent category. Used here because the product is already nested under its category, so repeating the category would just duplicate data the caller already has.\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes | The unique product identifier, min (exclusive) `0` |\n| `name` | string | yes | The product name, min length `1` |\n| `unit` | string | yes | The product's unit of sale, min length `1` |\n| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |\n| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |\n| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |\n\n\n**HTTPValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `detail` | array[ValidationError] | no |  |\n\n**ValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `loc` | array[string \\| int] | yes |  |\n| `msg` | string | yes |  |\n| `type` | string | yes |  |\n| `input` | any | no |  |\n| `ctx` | object | no |  |\n"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Flowers and Foliage\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:8000/categories/:id",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "categories",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "## Update Category\n\n`PUT localhost:8000/categories/{id}`\n\n**Auth:** Requires a Bearer token in the `Authorization` header (`Bearer <ACCESS_TOKEN>`). See **Create Token (Login)** to obtain one.\n\nUpdate a category with a given ID.\n\n**Path Parameters**\n\n| Name | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes |  |\n\n**Request Body** (required) — `application/json` CategoryCreate\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `name` | string | yes | The name of the category, min length `1` |\n\n**Responses**\n\n| Status | Description | Body |\n| --- | --- | --- |\n| `200` | The updated category | `application/json` CategoryRead |\n| `401` | The client is not authenticated | — |\n| `404` | A category with that ID does not exist. | — |\n| `422` | Validation Error | `application/json` HTTPValidationError |\n\n**CategoryRead** (response body)\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes | The unique category identifier, min (exclusive) `0` |\n| `name` | string | yes | The name of the category, min length `1` |\n\n\n**HTTPValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `detail` | array[ValidationError] | no |  |\n\n**ValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `loc` | array[string \\| int] | yes |  |\n| `msg` | string | yes |  |\n| `type` | string | yes |  |\n| `input` | any | no |  |\n| `ctx` | object | no |  |\n"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Categories",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "localhost:8000/categories/1",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "categories",
+                "1"
+              ]
+            },
+            "description": "## Delete Category\n\n`DELETE localhost:8000/categories/{id}`\n\n**Auth:** Requires a Bearer token in the `Authorization` header (`Bearer <ACCESS_TOKEN>`). See **Create Token (Login)** to obtain one.\n\nSoft deletes a category based on the given ID.\n\n**Path Parameters**\n\n| Name | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes |  |\n\n**Responses**\n\n| Status | Description | Body |\n| --- | --- | --- |\n| `204` | The category was deleted successfully. | — |\n| `401` | The client is not authenticated | — |\n| `404` | A category with that ID does not exist. | — |\n| `409` | The category must not have any products associated with it. | — |\n| `422` | Validation Error | `application/json` HTTPValidationError |\n\n\n**HTTPValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `detail` | array[ValidationError] | no |  |\n\n**ValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `loc` | array[string \\| int] | yes |  |\n| `msg` | string | yes |  |\n| `type` | string | yes |  |\n| `input` | any | no |  |\n| `ctx` | object | no |  |\n"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "View Products",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:8000/products?name=fertilizer",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "fertilizer"
+                },
+                {
+                  "key": "unit",
+                  "value": "each",
+                  "disabled": true
+                },
+                {
+                  "key": "name",
+                  "value": "basil",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "## View Products\n\n`GET localhost:8000/products`\n\n**Auth:** Not required.\n\nView all products in the database, optionally filtered by name and/or unit of sale.\n\nThe name search is performed on a normalized product name (lowercased and with whitespace stripped). For example, `\"3in\"` will match a product named `\"3 In. Planter\"`.\n\n**Query Parameters**\n\n| Name | Required | Notes |\n| --- | --- | --- |\n| `name` | no | Partial, normalized match on product name |\n| `unit` | no | Exact match on unit of sale |\n\n**Responses**\n\n| Status | Description | Body |\n| --- | --- | --- |\n| `200` | The list of products | `application/json` array[ProductRead] |\n\n**ProductRead**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes | The unique product identifier, min (exclusive) `0` |\n| `name` | string | yes | The product name, min length `1` |\n| `unit` | string | yes | The product's unit of sale (e.g. \"each\", \"bag\", \"lb\"), min length `1` |\n| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |\n| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |\n| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |\n| `category` | CategoryRead | yes | The category this product belongs to |\n\n**CategoryRead** (nested under `category`)\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes | The unique category identifier, min (exclusive) `0` |\n| `name` | string | yes | The name of the category, min length `1` |\n"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Basil Plant - 4in Pot\",\r\n    \"unit\": \"each\",\r\n    \"cost_per_unit\": \"1.75\",\r\n    \"price_per_unit\": \"4.99\",\r\n    \"quantity_in_stock\": \"40\",\r\n    \"category_id\": 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:8000/products",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "products"
+              ]
+            },
+            "description": "## Create Product\n\n`POST localhost:8000/products`\n\n**Auth:** Requires a Bearer token in the `Authorization` header (`Bearer <ACCESS_TOKEN>`). See **Create Token (Login)** to obtain one.\n\nCreate a new product.\n\n**Request Body** (required) — `application/json` ProductCreate\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `name` | string | yes | The product name, min length `1` |\n| `unit` | string | yes | The product's unit of sale (e.g. \"each\", \"bag\", \"lb\"), min length `1` |\n| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |\n| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |\n| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |\n| `category_id` | int | yes | The ID of the category this product belongs to, min (exclusive) `0` |\n\n**Responses**\n\n| Status | Description | Body |\n| --- | --- | --- |\n| `201` | The newly created product | `application/json` ProductRead |\n| `401` | The client is not authenticated | — |\n| `404` | The category referenced by `category_id` does not exist. | — |\n| `422` | Validation Error | `application/json` HTTPValidationError |\n\n**ProductRead** (response body)\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes | The unique product identifier, min (exclusive) `0` |\n| `name` | string | yes | The product name, min length `1` |\n| `unit` | string | yes | The product's unit of sale, min length `1` |\n| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |\n| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |\n| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |\n| `category` | CategoryRead | yes | The category this product belongs to |\n\n\n**HTTPValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `detail` | array[ValidationError] | no |  |\n\n**ValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `loc` | array[string \\| int] | yes |  |\n| `msg` | string | yes |  |\n| `type` | string | yes |  |\n| `input` | any | no |  |\n| `ctx` | object | no |  |\n"
+          },
+          "response": []
+        },
+        {
+          "name": "View Product",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:8000/products/:id",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "products",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "## View Product\n\n`GET localhost:8000/products/{id}`\n\n**Auth:** Not required.\n\nView a product with a given ID.\n\n**Path Parameters**\n\n| Name | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes |  |\n\n**Responses**\n\n| Status | Description | Body |\n| --- | --- | --- |\n| `200` | The product | `application/json` ProductRead |\n| `404` | A product with that ID does not exist. | — |\n| `422` | Validation Error | `application/json` HTTPValidationError |\n\n**ProductRead**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes | The unique product identifier, min (exclusive) `0` |\n| `name` | string | yes | The product name, min length `1` |\n| `unit` | string | yes | The product's unit of sale, min length `1` |\n| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |\n| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |\n| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |\n| `category` | CategoryRead | yes | The category this product belongs to |\n\n\n**HTTPValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `detail` | array[ValidationError] | no |  |\n\n**ValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `loc` | array[string \\| int] | yes |  |\n| `msg` | string | yes |  |\n| `type` | string | yes |  |\n| `input` | any | no |  |\n| `ctx` | object | no |  |\n"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Basil Plant - 2in Pot\",\r\n    \"unit\": \"each\",\r\n    \"cost_per_unit\": \"3.25\",\r\n    \"price_per_unit\": \"5.50\",\r\n    \"quantity_in_stock\": \"30\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:8000/products/:id",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "products",
+                ":id"
+              ],
+              "query": [
+                {
+                  "key": "",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "## Update Product\n\n`PUT localhost:8000/products/{id}`\n\n**Auth:** Requires a Bearer token in the `Authorization` header (`Bearer <ACCESS_TOKEN>`). See **Create Token (Login)** to obtain one.\n\nUpdate a product with a given ID.\n\n**Path Parameters**\n\n| Name | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes |  |\n\n**Request Body** (required) — `application/json` ProductCreate\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `name` | string | yes | The product name, min length `1` |\n| `unit` | string | yes | The product's unit of sale, min length `1` |\n| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |\n| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |\n| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |\n| `category_id` | int | yes | The ID of the category this product belongs to, min (exclusive) `0` |\n\n**Responses**\n\n| Status | Description | Body |\n| --- | --- | --- |\n| `200` | The updated product | `application/json` ProductRead |\n| `401` | The client is not authenticated | — |\n| `404` | A product with that ID does not exist, or the category referenced by `category_id` does not exist. | — |\n| `422` | Validation Error | `application/json` HTTPValidationError |\n\n**ProductRead** (response body)\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes | The unique product identifier, min (exclusive) `0` |\n| `name` | string | yes | The product name, min length `1` |\n| `unit` | string | yes | The product's unit of sale, min length `1` |\n| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |\n| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |\n| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |\n| `category` | CategoryRead | yes | The category this product belongs to |\n\n\n**HTTPValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `detail` | array[ValidationError] | no |  |\n\n**ValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `loc` | array[string \\| int] | yes |  |\n| `msg` | string | yes |  |\n| `type` | string | yes |  |\n| `input` | any | no |  |\n| `ctx` | object | no |  |\n"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "localhost:8000/products/1",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "products",
+                "1"
+              ]
+            },
+            "description": "## Delete Product\n\n`DELETE localhost:8000/products/{id}`\n\n**Auth:** Requires a Bearer token in the `Authorization` header (`Bearer <ACCESS_TOKEN>`). See **Create Token (Login)** to obtain one.\n\nDelete a product with a given ID.\n\n**Path Parameters**\n\n| Name | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `id` | int | yes |  |\n\n**Responses**\n\n| Status | Description | Body |\n| --- | --- | --- |\n| `204` | The product was deleted successfully. | — |\n| `401` | The client is not authenticated | — |\n| `404` | A product with that ID does not exist. | — |\n| `422` | Validation Error | `application/json` HTTPValidationError |\n\n\n**HTTPValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `detail` | array[ValidationError] | no |  |\n\n**ValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `loc` | array[string \\| int] | yes |  |\n| `msg` | string | yes |  |\n| `type` | string | yes |  |\n| `input` | any | no |  |\n| `ctx` | object | no |  |\n"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Database Check",
       "request": {
+        "auth": {
+          "type": "noauth"
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -22,185 +346,16 @@
             "db-check"
           ]
         },
-        "description": "## Database Health Check\n\nVerifies that the application server can successfully connect to the database and retrieves a basic summary of the current data state.\n\n---\n\n### Method & Endpoint\n\n```\nGET localhost:8000/db-check\n\n ```\n\n---\n\n### Response\n\n**Example Response Body:**\n\n``` json\n{\n  \"status\": \"connected\",\n  \"product_count\": 0\n}\n\n ```\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `status` | `string` | Indicates the current state of the database connection. A value of `\"connected\"` confirms the database is reachable and operational. |\n| `product_count` | `number` | The total number of product records currently stored in the database. Useful for a quick sanity check on data availability. |"
-      },
-      "response": []
-    },
-    {
-      "name": "View Products",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "localhost:8000/products",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000",
-          "path": [
-            "products"
-          ],
-          "query": [
-            {
-              "key": "name",
-              "value": "fertilizer",
-              "disabled": true
-            },
-            {
-              "key": "unit",
-              "value": "each",
-              "disabled": true
-            },
-            {
-              "key": "name",
-              "value": "basil",
-              "type": "text",
-              "disabled": true
-            }
-          ]
-        },
-        "description": "Retrieves a list of all products in the inventory. Each product includes the following fields:\n\n- **name** – The product name (e.g., `Basil Plant - 4in Pot`)\n- **unit** – The unit of measurement (e.g., `each`)\n- **cost_per_unit** – The cost price per unit (e.g., `1.75`)\n- **price_per_unit** – The retail price per unit (e.g., `4.99`)\n- **quantity_in_stock** – The current stock quantity (e.g., `40`)\n\n**Method:** GET  \n**URL:** `localhost:8000/products`  \n**Response:** Returns a JSON array of product objects."
-      },
-      "response": []
-    },
-    {
-      "name": "Create Product",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n    \"name\": \"Basil Plant - 4in Pot\",\r\n    \"unit\": \"each\",\r\n    \"cost_per_unit\": \"1.75\",\r\n    \"price_per_unit\": \"4.99\",\r\n    \"quantity_in_stock\": \"40\",\r\n    \"category_id\": 1\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "localhost:8000/products",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000",
-          "path": [
-            "products"
-          ]
-        },
-        "description": "Creates a new product in the inventory.\n\n**Endpoint:** `POST localhost:8000/products`\n\n### Request Body\n\nSend a JSON object with the following fields:\n\n| Field | Type | Description |\n|---|---|---|\n| `name` | string | The display name of the product (e.g. `\"Basil Plant - 4in Pot\"`) |\n| `unit` | string | The unit of measure for the product (e.g. `\"each\"`, `\"lb\"`, `\"oz\"`) |\n| `cost_per_unit` | string | The cost to the business per unit (e.g. `\"1.75\"`) |\n| `price_per_unit` | string | The retail price charged per unit (e.g. `\"4.99\"`) |\n| `quantity_in_stock` | string | The current number of units available in stock (e.g. `\"40\"`) |\n\n### Example Request Body\n\n```json\n{\n    \"name\": \"Basil Plant - 4in Pot\",\n    \"unit\": \"each\",\n    \"cost_per_unit\": \"1.75\",\n    \"price_per_unit\": \"4.99\",\n    \"quantity_in_stock\": \"40\"\n}\n```\n\n### Responses\n\n- **201 Created** – Product was successfully created. Returns the new product object.\n- **400 Bad Request** – Required fields are missing or invalid."
-      },
-      "response": []
-    },
-    {
-      "name": "View Product",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "localhost:8000/products/:id",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000",
-          "path": [
-            "products",
-            ":id"
-          ],
-          "variable": [
-            {
-              "key": "id",
-              "value": "1"
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Update Product",
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "",
-              "type": "string"
-            }
-          ]
-        },
-        "method": "PUT",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n    \"name\": \"Basil Plant - 2in Pot\",\r\n    \"unit\": \"each\",\r\n    \"cost_per_unit\": \"3.25\",\r\n    \"price_per_unit\": \"5.50\",\r\n    \"quantity_in_stock\": \"30\"\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "localhost:8000/products/:id",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000",
-          "path": [
-            "products",
-            ":id"
-          ],
-          "query": [
-            {
-              "key": "",
-              "value": null,
-              "type": "text",
-              "disabled": true
-            }
-          ],
-          "variable": [
-            {
-              "key": "id",
-              "value": "1"
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Delete Product",
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "",
-              "type": "string"
-            }
-          ]
-        },
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "localhost:8000/products/1",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000",
-          "path": [
-            "products",
-            "1"
-          ]
-        },
-        "description": "Deletes the product with the specified ID from the local API (`DELETE /products/1`). If the product does not exist, the API returns `404 Not Found` with a response body such as `{ \"detail\": \"Product with id 1 not found\" }`."
+        "description": "## Database Check\n\n`GET localhost:8000/db-check`\n\n**Auth:** Not required.\n\nCheck the status of the database connection.\n\n**Responses**\n\n| Status | Description | Body |\n| --- | --- | --- |\n| `200` | The connection status | `application/json` DatabaseStatus |\n\n**DatabaseStatus**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `status` | string | yes | Database connection status |\n| `product_count` | int | yes | The number of rows in the product table |\n\n**Example Response Body**\n\n```json\n{\n  \"status\": \"connected\",\n  \"product_count\": 0\n}\n```\n"
       },
       "response": []
     },
     {
       "name": "Create Token (Login)",
       "request": {
+        "auth": {
+          "type": "noauth"
+        },
         "method": "POST",
         "header": [],
         "body": {
@@ -221,110 +376,8 @@
           "path": [
             "tokens"
           ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Create Category",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n    \"name\": \"flowers\"\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
         },
-        "url": {
-          "raw": "localhost:8000/categories",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000",
-          "path": [
-            "categories"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "View Categories",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "localhost:8000/categories",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000",
-          "path": [
-            "categories"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "View Category",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "localhost:8000/categories/1",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000",
-          "path": [
-            "categories",
-            "1"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "View Category With Products",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "localhost:8000/categories/1/products",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000",
-          "path": [
-            "categories",
-            "1",
-            "products"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Delete Categories",
-      "request": {
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "localhost:8000/categories/1",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000",
-          "path": [
-            "categories",
-            "1"
-          ]
-        }
+        "description": "## Create Token (Login)\n\n`POST localhost:8000/tokens`\n\n**Auth:** Not required — this endpoint issues the token used by other endpoints.\n\nCreate a new session token in order to access protected endpoints.\n\n**Request Body** (required) — `application/json` UserCredentials\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `username` | string | yes |  |\n| `password` | string | yes |  |\n\n**Responses**\n\n| Status | Description | Body |\n| --- | --- | --- |\n| `201` | The token was created successfully. | TokenRead |\n| `401` | Invalid username or password provided. | — |\n| `422` | Validation Error | `application/json` HTTPValidationError |\n\n**TokenRead**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `access_token` | string | yes | A JWT for API access |\n| `token_type` | string | yes | Always `\"bearer\"` |\n\n**HTTPValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `detail` | array\\[ValidationError\\] | no |  |\n\n**ValidationError**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `loc` | array\\[string | int\\] | yes |  |\n| `msg` | string | yes |  |\n| `type` | string | yes |  |\n| `input` | any | no |  |\n| `ctx` | object | no |  |"
       },
       "response": []
     }
@@ -334,7 +387,7 @@
     "bearer": [
       {
         "key": "token",
-        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzg1NDM1NzY2fQ.eXFHkgS76jydD9D6kL7AogTcfUcVcgWyGzBtdt7IvSU",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzg1NTIwMTIxfQ.F5Y4vOcu6OCUtm0o0m7mSC9nuuBmfYUzjtc0IjPmQR4",
         "type": "string"
       }
     ]
