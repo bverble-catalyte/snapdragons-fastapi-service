@@ -102,6 +102,10 @@ class ProductCreate(ProductBase):
 class ProductRead(ProductBase):
     """Represents a product sold by the garden center."""
 
+    id: PositiveInt = Field(
+        title="Product ID", description="The unique product identifier"
+    )
+
     category: CategoryRead = Field(
         title="The product category",
         description="The category this product belongs to",
