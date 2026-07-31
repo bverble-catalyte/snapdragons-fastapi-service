@@ -41,7 +41,7 @@ def test_view_category_should_return_category(
 def test_view_category_on_nonexistant_category_should_return_404(
     unauthenticated_client,
 ):
-    response = unauthenticated_client.get(f"/products/1")
+    response = unauthenticated_client.get(f"/categories/1")
     assert response.status_code == 404
 
 
