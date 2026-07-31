@@ -22,6 +22,7 @@ class Settings:
         self._port = get_required_env("DB_PORT")
         self._db_name = get_required_env("DB_NAME")
         self._test_db_name = get_required_env("TEST_DB_NAME")
+        self._secret_key = get_required_env("SECRET_KEY")
 
     def build_url(self, db_name: str) -> str:
         return f"postgresql://{self._user}:{self._password}@{self._host}:{self._port}/{db_name}"
@@ -31,6 +32,10 @@ class Settings:
 
     def test_database_url(self, db_name: str | None = None) -> str:
         return self.build_url(db_name or self._test_db_name)
+
+    @property
+    def secret_key(self):
+        return self._secret_key
 
 
 settings = Settings()

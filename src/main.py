@@ -12,6 +12,7 @@ from pwdlib import PasswordHash
 from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
+from config import settings
 from database import Base, SessionLocal, engine, get_db
 from models.category import Category, CategoryCreate, CategoryRead
 from models.composite import CategoryReadWithProducts
@@ -20,9 +21,6 @@ from models.product import Product, ProductCreate, ProductRead
 from models.tokens import TokenRead
 from models.user import User, UserCredentials
 
-# generate a secret key in PowerShell:
-#   [Convert]::ToBase64String([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
-SECRET_KEY = "Ei/RWnrANct1ctayTdpm1YHoakgMqb7DJK5s8CmSAoU="
 ALGORITHM = "HS256"
 HASHER = PasswordHash.recommended()
 
@@ -64,7 +62,7 @@ def get_current_user(db: DbSession, token: str = Depends(get_bearer_token)) -> U
     )
 
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
         user_id = int(payload.get("sub") or "")
     except jwt.ExpiredSignatureError:
         raise HTTPException(
@@ -110,7 +108,7 @@ def create_token(db: DbSession, credentials: UserCredentials):
         "sub": str(user.id),
         "exp": expire_at,
     }
-    token = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+    token = jwt.encode(data, settings.secret_key, algorithm=ALGORITHM)
     return {"access_token": token, "token_type": "bearer"}
 
 
