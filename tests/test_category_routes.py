@@ -1,4 +1,3 @@
-import pytest
 from sqlalchemy import select
 
 from models.category import Category, CategoryCreate, CategoryRead
