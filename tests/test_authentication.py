@@ -26,7 +26,7 @@ def test_create_token_should_issue_token_on_valid_credentials(
     assert len(token.access_token) > 0
 
 
-def test_create_token_should_throw_401_on_invalid_credentials(
+def test_create_token_should_return_401_on_invalid_credentials(
     unauthenticated_client, seed_users, manager_invalid_credentials
 ):
     response = unauthenticated_client.post(
@@ -37,7 +37,7 @@ def test_create_token_should_throw_401_on_invalid_credentials(
     assert response.json()["detail"] == "Invalid username or password"
 
 
-def test_create_product_requires_authentication(
+def test_create_product_should_require_authentication(
     unauthenticated_client, valid_product_kwargs
 ):
     product = ProductCreate(**valid_product_kwargs)
@@ -49,7 +49,7 @@ def test_create_product_requires_authentication(
     assert response.json()["detail"] == "Not authenticated"
 
 
-def test_update_product_requires_authentication(
+def test_update_product_should_require_authentication(
     unauthenticated_client, seed_product, valid_product_kwargs, first_existing_product
 ):
     request_body = ProductCreate.model_validate(first_existing_product)
@@ -64,7 +64,7 @@ def test_update_product_requires_authentication(
     assert response.json()["detail"] == "Not authenticated"
 
 
-def test_delete_product_requires_authentication(
+def test_delete_product_should_require_authentication(
     unauthenticated_client, seed_product, first_existing_product
 ):
     response = unauthenticated_client.delete(f"/products/{first_existing_product.id}")

@@ -14,7 +14,7 @@ def test_create_category_should_create_category(
         assert value == getattr(category, field)
 
 
-def test_create_category_with_invalid_payload_should_return_422(
+def test_create_category_with_bad_input_should_return_422(
     authenticated_client, invalid_category_kwargs
 ):
     response = authenticated_client.post("/categories", json=invalid_category_kwargs)
@@ -128,14 +128,14 @@ def test_delete_category_on_nonexistant_category_should_return_404(
     assert response.status_code == 404
 
 
-def test_delete_category_with_associated_products_category_should_return_409(
+def test_delete_category_with_associated_products_should_return_409(
     authenticated_client, unused_category_id, first_existing_category
 ):
     response = authenticated_client.delete(f"/categories/{first_existing_category.id}")
     assert response.status_code == 409
 
 
-def test_delete_cateogry_should_keep_category_in_database(
+def test_delete_category_should_keep_category_in_database(
     authenticated_client, db_session, first_existing_category
 ):
     get_response = authenticated_client.get(f"/categories/{first_existing_category.id}")

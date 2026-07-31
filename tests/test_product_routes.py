@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from models.product import Product, ProductCreate, ProductRead
 
 
-def test_create_product(
+def test_create_product_should_create_product(
     authenticated_client, seed_category, valid_category_kwargs, valid_product_kwargs
 ):
     product = ProductCreate.model_validate(valid_product_kwargs)
@@ -31,14 +31,16 @@ def test_create_product(
     assert product.model_dump(mode="json") == expected.model_dump(mode="json")
 
 
-def test_create_product_with_invalid_payload_returns_422(
+def test_create_product_with_bad_input_should_return_422(
     authenticated_client, invalid_product_kwargs
 ):
     response = authenticated_client.post("/products", json=invalid_product_kwargs)
     assert response.status_code == 422
 
 
-def test_view_products_all(unauthenticated_client, db_session, seed_product):
+def test_view_products_should_return_all_products(
+    unauthenticated_client, db_session, seed_product
+):
     products = db_session.query(Product).all()
 
     response = unauthenticated_client.get("/products")
@@ -75,7 +77,7 @@ def test_view_products_search(
     assert response.status_code == 200
 
 
-def test_get_product_should_return_product(
+def test_view_product_should_return_product(
     unauthenticated_client, db_session, seed_product
 ):
     product = db_session.scalars(select(Product)).first()
@@ -85,14 +87,14 @@ def test_get_product_should_return_product(
     assert response.json() == product_json
 
 
-def test_get_product_should_return_404_if_not_exists(
+def test_view_product_on_nonexistant_product_should_return_404(
     unauthenticated_client, db_session
 ):
     response = unauthenticated_client.get(f"/products/1")
     assert response.status_code == 404
 
 
-def test_delete_should_remove_product_from_all_endpoint_responses(
+def test_delete_product_should_remove_product_from_all_endpoint_responses(
     authenticated_client, db_session, seed_product, first_existing_product
 ):
     eid = first_existing_product.id
@@ -114,14 +116,14 @@ def test_delete_should_remove_product_from_all_endpoint_responses(
     assert len(search_before.json()) - 1 == len(search_after.json())
 
 
-def test_delete_should_return_404_if_not_exists(
+def test_delete_product_on_nonexistant_product_should_return_404(
     authenticated_client, db_session, seed_product, unused_product_id
 ):
     response = authenticated_client.delete(f"/products/{unused_product_id}")
     assert response.status_code == 404
 
 
-def test_delete_should_keep_product_in_database(
+def test_delete_product_should_keep_product_in_database(
     authenticated_client, db_session, seed_product, first_existing_product
 ):
     get_response = authenticated_client.get(f"/products/{first_existing_product.id}")
@@ -133,7 +135,7 @@ def test_delete_should_keep_product_in_database(
     assert product.name == get_response.json()["name"]
 
 
-def test_update_should_update_product(
+def test_update_product_should_update_product(
     authenticated_client, db_session, seed_product, first_existing_product
 ):
     request_body = ProductCreate.model_validate(first_existing_product)
@@ -148,7 +150,7 @@ def test_update_should_update_product(
     assert get_response.json()["name"] == request_body.name
 
 
-def test_update_should_return_404_if_not_exists(
+def test_update_product_on_nonexistant_product_should_return_404(
     authenticated_client, db_session, valid_product_kwargs, unused_product_id
 ):
     request_body = ProductCreate(**(valid_product_kwargs))
@@ -158,7 +160,7 @@ def test_update_should_return_404_if_not_exists(
     assert response.status_code == 404
 
 
-def test_update_should_return_404_if_category_not_exists(
+def test_update_product_with_nonexistant_category_should_return_404(
     authenticated_client,
     db_session,
     seed_product,
@@ -177,7 +179,7 @@ def test_update_should_return_404_if_category_not_exists(
     assert product.category_id == first_existing_product.category_id
 
 
-def test_update_should_return_422_if_bad_input(
+def test_update_product_with_bad_input_should_return_422(
     authenticated_client,
     db_session,
     seed_product,
@@ -193,7 +195,7 @@ def test_update_should_return_422_if_bad_input(
     assert response.status_code == 422
 
 
-def test_update_should_not_update_deleted_products(
+def test_update_product_should_not_update_deleted_products(
     authenticated_client, db_session, seed_product, first_existing_product
 ):
     request_body = ProductCreate.model_validate(first_existing_product)
