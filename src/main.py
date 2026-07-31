@@ -240,7 +240,9 @@ def create_product(
     response_description="The updated product",
     responses={
         401: {"description": "The client is not authenticated"},
-        404: {"description": "A product with that ID does not exist."},
+        404: {
+            "description": "A product with that ID does not exist, or the category referenced by category_id does not exist."
+        },
     },
 )
 def update_product(

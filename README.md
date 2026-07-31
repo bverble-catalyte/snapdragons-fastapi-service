@@ -145,6 +145,8 @@ Create a new product.
 | Status | Description | Body |
 | --- | --- | --- |
 | `201` | The newly created product | `application/json` [`ProductRead`](#productread) |
+| `401` | The client is not authenticated | — |
+| `404` | The category referenced by `category_id` does not exist. | — |
 | `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
 
 [Back to Summary](#summary)
@@ -202,7 +204,8 @@ Update a product with a given ID.
 | Status | Description | Body |
 | --- | --- | --- |
 | `200` | The updated product | `application/json` [`ProductRead`](#productread) |
-| `404` | A product with that ID does not exist. | — |
+| `401` | The client is not authenticated | — |
+| `404` | A product with that ID does not exist, or the category referenced by `category_id` does not exist. | — |
 | `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
 
 [Back to Summary](#summary)
@@ -232,6 +235,7 @@ Delete a product with a given ID.
 | Status | Description | Body |
 | --- | --- | --- |
 | `204` | The product was deleted successfully. | — |
+| `401` | The client is not authenticated | — |
 | `404` | A product with that ID does not exist. | — |
 | `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
 
@@ -284,6 +288,7 @@ Create a new category.
 | Status | Description | Body |
 | --- | --- | --- |
 | `201` | The newly created category | `application/json` [`CategoryRead`](#categoryread) |
+| `401` | The client is not authenticated | — |
 | `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
 
 [Back to Summary](#summary)
@@ -330,7 +335,7 @@ View a category with a given ID and all its associated products.
 
 | Status | Description | Body |
 | --- | --- | --- |
-| `200` | The category | `application/json` [`CategoryReadWithProducts`](#categoryreadwithproducts) |
+| `200` | The category, with its associated products (as [`ProductBase`](#productbase), which omits `id` and `category`) | `application/json` [`CategoryReadWithProducts`](#categoryreadwithproducts) |
 | `404` | A category with that ID does not exist. | — |
 | `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
 
@@ -365,6 +370,7 @@ Update a category with a given ID.
 | Status | Description | Body |
 | --- | --- | --- |
 | `200` | The updated category | `application/json` [`CategoryRead`](#categoryread) |
+| `401` | The client is not authenticated | — |
 | `404` | A category with that ID does not exist. | — |
 | `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
 
@@ -395,6 +401,7 @@ Soft deletes category based on given ID.
 | Status | Description | Body |
 | --- | --- | --- |
 | `204` | The category was deleted successfully. | — |
+| `401` | The client is not authenticated | — |
 | `404` | A category with that ID does not exist. | — |
 | `409` | The category must not have any products associated with it. | — |
 | `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
@@ -462,6 +469,18 @@ Create a new session token in order to access protected endpoints.
 | `detail` | array[[`ValidationError`](#validationerror)] | no |  |
 
 
+### ProductBase
+
+Common product fields, without `id` or `category`. Used for products nested under [`CategoryReadWithProducts`](#categoryreadwithproducts).
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `name` | string | yes | The product name, min length `1` |
+| `unit` | string | yes | The product's unit of sale (e.g. "each", "bag", "lb"), min length `1` |
+| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |
+| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |
+| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |
+
 ### ProductCreate
 
 Input schema for creating a new product. Does not include `id`, since this will be assigned on creation.
@@ -473,6 +492,7 @@ Input schema for creating a new product. Does not include `id`, since this will 
 | `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |
 | `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |
 | `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |
+| `category_id` | int | yes | The ID of the category this product belongs to, min (exclusive) `0` |
 
 ### ProductRead
 
@@ -486,6 +506,7 @@ Represents a product sold by the garden center.
 | `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |
 | `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |
 | `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |
+| `category` | [`CategoryRead`](#categoryread) | yes | The category this product belongs to |
 
 ### TokenRead
 
