@@ -172,17 +172,17 @@ def test_update_product_should_not_update_deleted_products(
 def test_delete_product_should_remove_product_from_all_endpoint_responses(
     authenticated_client, db_session, seed_product, first_existing_product
 ):
-    eid = first_existing_product.id
+    pid = first_existing_product.id
 
-    view_one_before = authenticated_client.get(f"/products/{eid}")
+    view_one_before = authenticated_client.get(f"/products/{pid}")
     search_query = view_one_before.json()["name"][:3]
     view_all_before = authenticated_client.get("/products")
     search_before = authenticated_client.get("/products", params={"name": search_query})
 
-    response = authenticated_client.delete(f"/products/{eid}")
+    response = authenticated_client.delete(f"/products/{pid}")
     assert response.status_code == 204
 
-    view_one_after = authenticated_client.get(f"/products/{eid}")
+    view_one_after = authenticated_client.get(f"/products/{pid}")
     view_all_after = authenticated_client.get("/products")
     search_after = authenticated_client.get("/products", params={"name": search_query})
 

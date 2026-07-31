@@ -98,8 +98,8 @@ def test_update_category_should_not_update_deleted_categories(
         json=request_body.model_dump(mode="json"),
     )
     assert response.status_code == 404
-    product = db_session.get(Category, first_existing_category.id)
-    assert product == first_existing_category
+    category = db_session.get(Category, first_existing_category.id)
+    assert category == first_existing_category
 
 
 def test_delete_category_should_remove_category_from_all_endpoint_responses(
@@ -142,5 +142,5 @@ def test_delete_category_should_keep_category_in_database(
         f"/categories/{first_existing_category.id}"
     )
     assert delete_response.status_code == 204
-    product = db_session.get(Category, first_existing_category.id)
-    assert product.name == get_response.json()["name"]
+    category = db_session.get(Category, first_existing_category.id)
+    assert category.name == get_response.json()["name"]
