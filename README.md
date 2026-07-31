@@ -335,7 +335,7 @@ View a category with a given ID and all its associated products.
 
 | Status | Description | Body |
 | --- | --- | --- |
-| `200` | The category, with its associated products (as [`ProductBase`](#productbase), which omits `id` and `category`) | `application/json` [`CategoryReadWithProducts`](#categoryreadwithproducts) |
+| `200` | The category, with its associated products | `application/json` [`CategoryReadWithProducts`](#categoryreadwithproducts) |
 | `404` | A category with that ID does not exist. | — |
 | `422` | Validation Error | `application/json` [`HTTPValidationError`](#httpvalidationerror) |
 
@@ -468,18 +468,6 @@ Create a new session token in order to access protected endpoints.
 | --- | --- | --- | --- |
 | `detail` | array[[`ValidationError`](#validationerror)] | no |  |
 
-
-### ProductBase
-
-Common product fields, without `id` or `category`. Used for products nested under [`CategoryReadWithProducts`](#categoryreadwithproducts).
-
-| Field | Type | Required | Notes |
-| --- | --- | --- | --- |
-| `name` | string | yes | The product name, min length `1` |
-| `unit` | string | yes | The product's unit of sale (e.g. "each", "bag", "lb"), min length `1` |
-| `cost_per_unit` | string | yes | Amount the garden center pays suppliers, in dollars per unit, min (exclusive) `0.0` |
-| `price_per_unit` | string | yes | Amount the garden center charges customers, in dollars per unit, min (exclusive) `0.0` |
-| `quantity_in_stock` | string | yes | Current amount of product in inventory, in stock units, min `0.0` |
 
 ### ProductCreate
 

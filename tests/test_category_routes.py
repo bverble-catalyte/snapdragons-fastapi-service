@@ -1,6 +1,7 @@
 from sqlalchemy import select
 
 from models.category import Category, CategoryCreate, CategoryRead
+from models.product import Product, ProductRead
 
 
 def test_create_category_should_create_category(
@@ -43,6 +44,29 @@ def test_view_category_on_nonexistant_category_should_return_404(
 ):
     response = unauthenticated_client.get(f"/categories/1")
     assert response.status_code == 404
+
+
+def test_view_category_products_should_return_category_with_products(
+    unauthenticated_client, db_session, seed_product, first_existing_category
+):
+    products = db_session.scalars(
+        select(Product).filter(Product.category_id == first_existing_category.id)
+    ).all()
+
+    response = unauthenticated_client.get(
+        f"/categories/{first_existing_category.id}/products"
+    )
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["id"] == first_existing_category.id
+    assert body["name"] == first_existing_category.name
+
+    expected_products = [
+        ProductRead.model_validate(p, from_attributes=True).model_dump(mode="json")
+        for p in products
+    ]
+    assert body["products"] == expected_products
 
 
 def test_update_category_should_update_category(
