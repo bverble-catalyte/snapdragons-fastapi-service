@@ -1,5 +1,7 @@
+import json
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Annotated, List
 from zoneinfo import ZoneInfo
 
@@ -28,21 +30,25 @@ HASHER = PasswordHash.recommended()
 get_bearer_token = OAuth2PasswordBearer(tokenUrl="/tokens")
 
 
+def load_seed_data(path: Path = Path("data/seed_data.json")) -> None:
+    data = json.loads(path.read_text())
+    with SessionLocal() as session:
+        for cat in data["users"]:
+            user = User(**cat)
+            session.add(user)
+        for cat in data["categories"]:
+            category = Category(name=cat["name"])
+            for prod in cat["products"]:
+                category.products.append(Product(**prod))
+            session.add(category)
+        session.commit()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # pragma: no cover
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
-    session = SessionLocal
-    with SessionLocal() as session:
-        user = User(
-            **{
-                "username": "manager",
-                # password == "admin"
-                "password_hash": "$argon2id$v=19$m=65536,t=3,p=4$cZwzIBCPEaSFju3XYSXT2Q$Tt3jLTrMTyb+hafu05PHSv2eZbv3YYh5kzmkrlDktR8",
-            }
-        )
-        session.add(user)
-        session.commit()
+    load_seed_data()
     yield
 
 

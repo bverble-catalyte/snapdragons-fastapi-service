@@ -1,0 +1,162 @@
+{
+  "users": [
+    {
+      "username": "manager",
+      "password_hash": "$argon2id$v=19$m=65536,t=3,p=4$cZwzIBCPEaSFju3XYSXT2Q$Tt3jLTrMTyb+hafu05PHSv2eZbv3YYh5kzmkrlDktR8"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Live Plants",
+      "products": [
+        {
+          "name": "Basil Plant - 4in Pot",
+          "unit": "each",
+          "cost_per_unit": "1.75",
+          "price_per_unit": "4.99",
+          "quantity_in_stock": "40"
+        },
+        {
+          "name": "Tomato Seedling - 4in Pot",
+          "unit": "each",
+          "cost_per_unit": "1.50",
+          "price_per_unit": "3.99",
+          "quantity_in_stock": "65"
+        },
+        {
+          "name": "Lavender Plant - 6in Pot",
+          "unit": "each",
+          "cost_per_unit": "3.25",
+          "price_per_unit": "7.99",
+          "quantity_in_stock": "30"
+        },
+        {
+          "name": "Boston Fern - Hanging Basket",
+          "unit": "each",
+          "cost_per_unit": "6.50",
+          "price_per_unit": "14.99",
+          "quantity_in_stock": "18"
+        },
+        {
+          "name": "Japanese Maple - 3 Gallon",
+          "unit": "each",
+          "cost_per_unit": "22.00",
+          "price_per_unit": "49.99",
+          "quantity_in_stock": "12"
+        },
+        {
+          "name": "Basil Seeds - Packet",
+          "unit": "packet",
+          "cost_per_unit": "0.85",
+          "price_per_unit": "2.49",
+          "quantity_in_stock": "120"
+        }
+      ]
+    },
+    {
+      "name": "Pots and Planters",
+      "products": [
+        {
+          "name": "Terracotta Pot - 8in",
+          "unit": "each",
+          "cost_per_unit": "2.00",
+          "price_per_unit": "5.49",
+          "quantity_in_stock": "55"
+        },
+        {
+          "name": "Ceramic Planter - Glazed Blue",
+          "unit": "each",
+          "cost_per_unit": "8.75",
+          "price_per_unit": "19.99",
+          "quantity_in_stock": "20"
+        },
+        {
+          "name": "Hanging Basket - Coco Liner",
+          "unit": "each",
+          "cost_per_unit": "4.50",
+          "price_per_unit": "11.99",
+          "quantity_in_stock": "25"
+        },
+        {
+          "name": "Window Box Planter - 24in",
+          "unit": "each",
+          "cost_per_unit": "12.00",
+          "price_per_unit": "27.99",
+          "quantity_in_stock": "15"
+        },
+        {
+          "name": "Self-Watering Planter - 10in",
+          "unit": "each",
+          "cost_per_unit": "9.25",
+          "price_per_unit": "22.99",
+          "quantity_in_stock": "18"
+        },
+        {
+          "name": "Terracotta Pot - 12in",
+          "unit": "each",
+          "cost_per_unit": "4.50",
+          "price_per_unit": "10.99",
+          "quantity_in_stock": "32"
+        },
+        {
+          "name": "Ceramic Planter - Glazed White",
+          "unit": "each",
+          "cost_per_unit": "8.75",
+          "price_per_unit": "19.99",
+          "quantity_in_stock": "16"
+        }
+      ]
+    },
+    {
+      "name": "Soil and Fertilizer",
+      "products": [
+        {
+          "name": "Potting Mix - 20qt Bag",
+          "unit": "bag",
+          "cost_per_unit": "3.50",
+          "price_per_unit": "8.99",
+          "quantity_in_stock": "80"
+        },
+        {
+          "name": "Organic Compost - 40lb Bag",
+          "unit": "bag",
+          "cost_per_unit": "4.75",
+          "price_per_unit": "10.99",
+          "quantity_in_stock": "60"
+        },
+        {
+          "name": "All-Purpose Fertilizer - 5lb Bag",
+          "unit": "bag",
+          "cost_per_unit": "5.25",
+          "price_per_unit": "12.99",
+          "quantity_in_stock": "45"
+        },
+        {
+          "name": "Bone Meal - 3lb Bag",
+          "unit": "bag",
+          "cost_per_unit": "3.75",
+          "price_per_unit": "8.49",
+          "quantity_in_stock": "38"
+        },
+        {
+          "name": "Mulch - Cedar, 2cf Bag",
+          "unit": "bag",
+          "cost_per_unit": "2.90",
+          "price_per_unit": "6.99",
+          "quantity_in_stock": "100"
+        },
+        {
+          "name": "Tomato Fertilizer - 4lb Bag",
+          "unit": "bag",
+          "cost_per_unit": "4.10",
+          "price_per_unit": "9.49",
+          "quantity_in_stock": "50"
+        }
+      ]
+    },
+    {
+      "name": "Hand Tools",
+      "products": []
+    }
+  ]
+}
