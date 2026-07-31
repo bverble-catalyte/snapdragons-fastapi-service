@@ -250,6 +250,9 @@ def update_product(
     user: User = Depends(get_current_user),
 ) -> Product:
     """Update a product with a given ID."""
+    category = db.get(Category, product_create.category_id)
+    if category is None:
+        raise HTTPException(status_code=404, detail="The category was not found")
     for field, value in product_create.model_dump().items():
         setattr(product, field, value)
     db.commit()

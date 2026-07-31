@@ -179,6 +179,25 @@ def test_update_should_return_404_if_not_exists(
     assert response.status_code == 404
 
 
+def test_update_should_return_404_if_category_not_exists(
+    authenticated_client,
+    db_session,
+    seed_product,
+    first_existing_product,
+    unused_category_id,
+):
+    request_body = ProductCreate.model_validate(first_existing_product)
+    request_body.category_id = unused_category_id
+    response = authenticated_client.put(
+        f"/products/{first_existing_product.id}",
+        json=request_body.model_dump(mode="json"),
+    )
+
+    assert response.status_code == 404
+    product = db_session.get(Product, first_existing_product.id)
+    assert product.category_id == first_existing_product.category_id
+
+
 def test_update_should_return_422_if_bad_input(
     authenticated_client,
     db_session,
