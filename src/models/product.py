@@ -1,7 +1,14 @@
 from decimal import Decimal
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field, PositiveInt, StringConstraints
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    PositiveInt,
+    StringConstraints,
+    field_validator,
+)
 from sqlalchemy import Boolean, ForeignKey, Identity, Integer, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -50,13 +57,7 @@ class Product(Base):
     is_deleted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
 
-class ProductCreate(BaseModel):
-    """
-    Input schema for creating a new product.
-
-    Does not include `id`, since this will be assigned on creation.
-    """
-
+class ProductBase(BaseModel):
     name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
         Field(title=PRODUCT_NAME_TITLE, description=PRODUCT_NAME_DESC)
     )
@@ -72,6 +73,15 @@ class ProductCreate(BaseModel):
     quantity_in_stock: Annotated[Decimal, Field(ge=0)] = Field(
         title=PRODUCT_QUANTITY_TITLE, description=PRODUCT_QUANTITY_IN_STOCK_DESC
     )
+
+
+class ProductCreate(ProductBase):
+    """
+    Input schema for creating a new product.
+
+    Does not include `id`, since this will be assigned on creation.
+    """
+
     category_id: PositiveInt = Field(title="The product's category ID")
 
     model_config = ConfigDict(
@@ -89,27 +99,9 @@ class ProductCreate(BaseModel):
     )
 
 
-class ProductRead(BaseModel):
+class ProductRead(ProductBase):
     """Represents a product sold by the garden center."""
 
-    id: PositiveInt = Field(
-        title="Product ID", description="The unique product identifier"
-    )
-    name: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
-        Field(title=PRODUCT_NAME_TITLE, description=PRODUCT_NAME_DESC)
-    )
-    unit: Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)] = (
-        Field(title=PRODUCT_UNIT_TITLE, description=PRODUCT_UNIT_DESC)
-    )
-    cost_per_unit: Annotated[Decimal, Field(gt=0, decimal_places=2)] = Field(
-        title=PRODUCT_COST_TITLE, description=PRODUCT_COST_PER_UNIT_DESC
-    )
-    price_per_unit: Annotated[Decimal, Field(gt=0, decimal_places=2)] = Field(
-        title=PRODUCT_UNIT_TITLE, description=PRODUCT_PRICE_PER_UNIT_DESC
-    )
-    quantity_in_stock: Annotated[Decimal, Field(ge=0)] = Field(
-        title=PRODUCT_QUANTITY_TITLE, description=PRODUCT_QUANTITY_IN_STOCK_DESC
-    )
     category: CategoryRead = Field(
         title="The product category",
         description="The category this product belongs to",
