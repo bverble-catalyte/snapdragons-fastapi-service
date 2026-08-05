@@ -80,6 +80,12 @@ def get_current_user(db: DbSession, token: str = Depends(get_bearer_token)) -> U
     return user
 
 
+@app.get("/", response_description="The API status")
+def root():
+    """Returns the status of the API."""
+    return {"status": "ok"}
+
+
 @app.post(
     "/tokens",
     status_code=status.HTTP_201_CREATED,
